@@ -1,0 +1,17 @@
+This document describes the file structure of the source code:
+
+/Gui:
+    Contains Python Modules regarding GUI Components to be used in the program.
+
+/UI:
+    Contains assets for the User Interface in the program.
+    /Icons:
+        Contains icon images for the UI.
+
+/Utils
+    Contains extra utilites that trim the length of the library module.
+
+Root Directory:
+Contains the python program that binds all other dependants.
+Contains the python library module that contains drawing constants, utilities and UI filepaths.
+Also contains "explanation files" that explain the project or code (Optional).
