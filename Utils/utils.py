@@ -40,8 +40,12 @@ def get_screen_parts(screen: pygame.Surface) -> dict:
     }
     return constants_dict
 
-def set_custom_cursor(screen: pygame.Surface, cursor, cursor_pos: tuple):
-    """Sets the cursor of the application."""
-    screen.blit(cursor, cursor_pos)
-    
-    
+def draw_cursor(screen, cursor, cursor_rect):
+    """Draws a custom cursor to the screen."""
+    cursor_rect.center = pygame.mouse.get_pos()  # update position 
+    screen.blit(cursor, cursor_rect) 
+
+def get_darker_color(color: tuple, factor: int):
+    """Returns the darker version of a given rgb factor"""
+    darker_color = (round(255 - (color[0] / factor)), round(255 - (color[1] / factor)), round(255 - (color[2] / factor)))
+    return darker_color

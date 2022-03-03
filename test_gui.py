@@ -1,8 +1,11 @@
 """Test /GUI code here."""
+import random
 from Gui.depends import *
 from Gui.label import TextNode
 from Gui.select_box import SelectBox
+from Gui.button import Button
 from Utils.utils import *
+from Utils.colors import get_colors_list
 import paintlib
 from paintlib import colors_dict
 
@@ -11,26 +14,79 @@ sw, sh = 500, 500
 screen = pygame.display.set_mode((sw, sh))
 screen_parts = get_screen_parts(screen)
 refresh_rate = 120
-cursor_size = (40, 40)
+cursor_size = (35, 35)
 cursor = pygame.transform.smoothscale(pygame.image.load(paintlib.CURSORS["pointer"]), cursor_size)
 cursor_rect = cursor.get_rect()
 clock = pygame.time.Clock()
 
 """Instantize Test Classes Here"""
-tx = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Basic Colors", 25, paintlib.WHITE, paintlib.BLACK)
-sb = SelectBox(screen, colors_dict["basic_colors"], paintlib.FONTS["ui_font"], colors_dict['a']['azure1'], label_text=tx)
-def select_box_test(screen):
-    screen.fill(paintlib.WHITE)
+txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Basic Colors", 25, paintlib.WHITE, paintlib.BLACK)
+sb = SelectBox(screen, colors_dict["basic_colors"], paintlib.FONTS["ui_font"], colors_dict['a']['azure1'], label_text=txt, selection_color=paintlib.BLACK)
+btn_txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Clear", 20, paintlib.BLACK)
+btn = Button(300, 250, 90, 50, paintlib.WHITE, text=btn_txt, border_width=7, border_radius=15, border_color=colors_dict["b"]["black"])
+
+def draw_select_box(screen, bg_color):
+    """SelectBox draw method."""
+    screen.fill(bg_color)
     sb.draw(*(25, screen.get_height()//2-50), colors_dict['b']['brown1'], border_radius=30, outline=True, outline_width=7,
             outline_color=colors_dict['b']['black'])
 
-def draw_cursor(screen, cursor, cursor_rect):
-    cursor_rect.center = pygame.mouse.get_pos()  # update position 
-    screen.blit(cursor, cursor_rect) 
+def draw_button(screen):
+    """Button draw method"""
+    screen.fill(paintlib.WHITE)
+    btn.draw(screen)
 
-def run_test(test_func: typing.Callable):
-    """Runs any test, by updating and displaying it on the runtime parameters."""
+def button_test():
+    """Sample Button Test."""
     running = True
+    pygame.mouse.set_visible(False)
+    while running:
+        clock.tick(refresh_rate)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                # check if clicked
+                mpos = pygame.mouse.get_pos()
+                if btn.clicked(mpos):
+                    print(f"{btn.text.text} was clicked.")
+
+            if event.type == pygame.MOUSEMOTION:
+                mpos = pygame.mouse.get_pos()
+                btn.onhover(mpos)
+
+            if event.type == pygame.KEYDOWN:
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_w]:
+                    btn.rect.y -= 10
+                    btn.color = random.choice(get_colors_list())
+                    btn.text.color = random.choice(get_colors_list())
+                elif keys[pygame.K_s]:
+                    btn.rect.y += 10
+                    btn.color = random.choice(get_colors_list())
+                    btn.text.color = random.choice(get_colors_list())
+                elif keys[pygame.K_a]:
+                    btn.rect.x -= 10
+                    btn.color = random.choice(get_colors_list())
+                    btn.text.color = random.choice(get_colors_list())
+                elif keys[pygame.K_d]:
+                    btn.rect.x += 10
+                    btn.color = random.choice(get_colors_list())
+                    btn.text_color = random.choice(get_colors_list())
+
+
+        draw_button(screen)
+        draw_cursor(screen, cursor, cursor_rect)
+        pygame.display.update()
+
+def select_box_test():
+    """Sample SelectBox Test."""
+    running = True
+    background_color = colors_dict["g"]["gray50"]
     pygame.mouse.set_visible(False)
     while running:
         clock.tick(refresh_rate)
@@ -42,35 +98,27 @@ def run_test(test_func: typing.Callable):
                 quit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # Check for mouse click
+                # Change background color of window based on selected option.
                 mpos = pygame.mouse.get_pos()
                 sb.select_rect(mpos)
+                if sb.get_selected_value() != None:
+                    background_color = colors_dict["basic_colors"][sb.get_selected_value()]
 
             if event.type == pygame.MOUSEMOTION:
-                # Check if mouse is moving
+                # Check if mouse is hover over SelectBox.
                 mpos = pygame.mouse.get_pos()
                 sb.hover_rect(mpos)
 
-            if event.type == pygame.KEYDOWN:
-                # Checking for key presses
-                mpos = pygame.mouse.get_pos()
-                if sb.is_hovering_box(mpos):
-                    keys=pygame.key.get_pressed()
-                    if keys[pygame.K_UP]:
-                        sb.hover_by_iteration("up")
-                    elif keys[pygame.K_DOWN]:
-                        sb.hover_by_iteration("down")
-                    elif keys[pygame.K_RETURN]:
-                        sb.select_hover_rect()
-
-
-        test_func(screen)
+        draw_select_box(screen, background_color)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()
 
-# Run Your Tests Here
-run_test(select_box_test)
-
+"""Run Your Tests Here (CLI)."""
+tests = [select_box_test, button_test]
+if len(sys.argv) >= 2: # test_gui.py [test_name]
+    test = sys.argv[1]
+    # runs the function by calling the function name from string to evaluated literal function.
+    eval(test)()
             
 
     

@@ -3,7 +3,7 @@ from Utils import utils
 
 class TextNode:
     """Text Object Representation aside functional `draw_text`, without the position
-    argument. No drawing method."""
+    argument. Drawing method takes positional argument."""
     def __init__(self, screen: pygame.Surface, font_file: str, text: str, 
     font_size: int, color: tuple, background_color=None, bold=False, italic=False, underline=False):
         self.screen = screen
@@ -15,6 +15,10 @@ class TextNode:
         self.bold = bold
         self.italic = italic
         self.underline = underline
+
+    def draw(self, pos):
+        utils.draw_text(screen=self.screen, font_file=self.font_file, text=self.text, font_size=self.font_size, color=self.color, backg=self.background_color, bold=self.bold, italic=self.italic, underline=self.underline, pos=pos)
+
         
 class Label:
     """Text Object Representation aside functional `draw_text`."""

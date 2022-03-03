@@ -4,7 +4,8 @@ import collections
 
 # Application Cursor
 CURSORS = {
-    "pointer":"UI/Cursors/ubuntu-pointer.png"
+    "pointer":"UI/Cursors/ubuntu-pointer.png",
+    "black_pointer":"UI/Cursors/black-pointer.png"
 }
 
 # BASIC Colors as seperate variables (Just For Convienience, but is also a pallete)
@@ -25,7 +26,7 @@ FONTS = {
 """Color Dictionary containing all colors availible."""
 colors_dict = {}
 for letter in colors.ALPHABET:
-    value = {color:colors.COLORS[color] for color in colors.get_colors_list() if color.startswith(letter)}
+    value = {color:colors.COLORS[color] for color in colors.get_names_list() if color.startswith(letter)}
     if len(value) > 0: # if the color has an actual letter group, then record the value.
         colors_dict[f"{letter}"] = value # creates all availible palletes based on first letter.
 

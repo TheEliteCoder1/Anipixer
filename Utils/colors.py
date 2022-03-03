@@ -1126,8 +1126,14 @@ def get_all_colors():
     for key, value in COLORS.items():
         print(key)
 
-def get_colors_list():
+def get_names_list():
     colors_lst = []
     for key, value in COLORS.items():
         colors_lst.append(key)
+    return colors_lst
+    
+def get_colors_list():
+    colors_lst = []
+    for key, value in COLORS.items():
+        colors_lst.append(value)
     return colors_lst
