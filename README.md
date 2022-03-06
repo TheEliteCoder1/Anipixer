@@ -1,2 +1,2 @@
-# Paint-Program
-A Simple Canvas-Style Paint Program written in Python and Pygame.
+# Anipixer
+A Simple Pixel Art Style Animation & Paint Program written in Python and Pygame.
