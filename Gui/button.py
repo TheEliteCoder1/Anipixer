@@ -22,10 +22,10 @@ class Button:
     def draw(self, screen):
         """Draws the button to the screen every frame."""
         if self.border_width > 0: # wether we can even see the border
-            pygame.draw.rect(screen, self.color, self.rect)
+            pygame.draw.rect(screen, self.color, self.rect, border_radius=self.border_radius)
             pygame.draw.rect(screen, self.border_color, self.rect, width=self.border_width, border_radius=self.border_radius)
         else:
-            pygame.draw.rect(screen, self.color, self.rect)
+            pygame.draw.rect(screen, self.color, self.rect, border_radius=self.border_radius)
 
         if self.text != None:
             self.text.draw(pos=self.rect.center)
@@ -34,11 +34,9 @@ class Button:
     def onhover(self, mpos):
         """Does something when mouse is hovering over button."""
         if self.rect.collidepoint(mpos):
-            #self.color = (self.color[0] / 0.2, self.color[1] / 0.2, self.color[2] / 02)
             self.color = self.darker_color
         else:
             self.color = self.original_color
-        #     self.color = (val*2 for val in self.color)
     
     def clicked(self, mpos):
         """Checks wether the mouse has clicked on this button."""

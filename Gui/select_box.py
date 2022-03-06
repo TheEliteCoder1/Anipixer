@@ -26,9 +26,9 @@ class SelectBox:
         """Draws the SelectBox to the screen every frame."""
         # These collections must be instatized here, so we dont add to the original one every frame!
         # UPDATE: Silly mistake caused Extremly low performance. 
-        # The length of the list was increasing every second -> 8, 1000, 1000000, exponentially!
-        # Now the size stays at 8 every second that the program runs!
-        # New lists must be created so we dont add the same item again and again.
+        # The length of the list was increasing every second e.g, -> 8, 1000, 1000000, exponentially!
+        # Now the size stays at the initial e.g, -> (8) every second that the program runs!
+        # New lists must be created every frame so we dont add the same item again and again.
         self.text_rectangles = []
         self.options = [] # list of dictionaries -> {option : ..., position_on_box: ...}
                 

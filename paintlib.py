@@ -45,12 +45,11 @@ colors_dict["basic_colors"] = {
 # Ordering the position of each color alphabeticaly with first character rule.
 colors_dict["basic_colors"] = collections.OrderedDict(sorted(colors_dict["basic_colors"].items()))
 
+# Used when created color palletes.
+basic_colors_list = [color for (name, color) in colors_dict['basic_colors'].items()]
+
 def print_colors_dict():
     """Formatted Output of all colors, rgb values, and thier groups/palletes."""
     for color_group in colors_dict.keys():
         for color_name, rgb in colors_dict[color_group].items():
             print(color_group, color_name, rgb)
-
-# class ColorPalleteSelector()
-
-# colors_dict[color_pallete][color]

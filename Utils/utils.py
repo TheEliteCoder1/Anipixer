@@ -26,7 +26,7 @@ def get_screen_parts(screen: pygame.Surface) -> dict:
     """Get usefull parts of the screen as variables returned in a dict where key is the variable name alongside it's value."""
     center_screen_x = screen.get_width() // 2
     center_screen_y = screen.get_height() // 2
-    margin_top = 50 
+    margin_top = 30 
     margin_left = 20
     center_screen_pos = (center_screen_x, center_screen_y)  
     top_middle_screen = (center_screen_x, margin_top)
