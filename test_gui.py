@@ -27,8 +27,7 @@ sb = SelectBox(screen, colors_dict["basic_colors"], paintlib.FONTS["ui_font"], c
 btn_txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Clear", 20, paintlib.BLACK)
 btn = Button(300, 250, 90, 50, paintlib.WHITE, text=btn_txt, border_width=7, border_radius=15, border_color=colors_dict["b"]["black"])
 cp = ColorPallete(screen, 50, 50, color_values=paintlib.basic_colors_list, color_button_size=(30, 30))
-cv = Canvas(screen, *screen_parts["top_middle_screen"], 10, 10, 5)
-cv.canvas_color = paintlib.RED
+cv = Canvas(screen, *screen_parts["top_middle_screen"], 10, 10, 25)
 
 def draw_canvas(screen):
     """Canvas draw method."""
@@ -55,6 +54,7 @@ def draw_button(screen):
 def canvas_test():
     """Sample Canvas Test"""
     running = True
+    is_mouse_dragging = False
     pygame.mouse.set_visible(False)
     while running:
         clock.tick(refresh_rate)
@@ -64,6 +64,22 @@ def canvas_test():
                 running = False
                 pygame.quit()
                 quit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_h:
+                    cv.show_grid = False
+                elif event.key == pygame.K_g:
+                    cv.show_grid = True
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                is_mouse_dragging = False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                is_mouse_dragging = True
+
+        if is_mouse_dragging == True:
+            mpos = pygame.mouse.get_pos()
+            cv.paint_pixel(mpos)
 
         draw_canvas(screen)
         draw_cursor(screen, cursor, cursor_rect)
