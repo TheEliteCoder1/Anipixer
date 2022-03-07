@@ -37,6 +37,8 @@ def get_screen_parts(screen: pygame.Surface) -> dict:
         "center_screen_pos":center_screen_pos,
         "canvas_pos":canvas_pos,
         "top_middle_screen":top_middle_screen,
+        "screen_height":screen.get_height(),
+        "screen_width":screen.get_width(),
         "margin_top":margin_top,
         "margin_left":margin_left
     }

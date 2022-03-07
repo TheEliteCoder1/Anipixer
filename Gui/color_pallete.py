@@ -12,7 +12,7 @@ class ColorPallete:
         self.color_values = color_values
         self.color_button_size = color_button_size
         self.draw_scale = 18
-        self.width_factor = 3
+        self.width_factor = 2.5
         self.height_factor = 0.5
 
     def draw(self, outline=True, color=(255,255,255), border_color=(0,0,0), border_width=1, border_radius=1):
@@ -37,9 +37,13 @@ class ColorPallete:
             if i > 0:
                 swatch_x = first_x_y[0]*(i+1)
                 swatch_y = first_x_y[1]
+            if i == len(self.color_values):
+                swatch_x = first_x_y[0]*(i)
+                swatch_y = first_x_y[1]
             data = {"color":self.color_values[i], "rect":pygame.Rect(swatch_x, swatch_y, *self.color_button_size)}
             self.swatches.append(data)
         for i in range(len(self.swatches)):
             pygame.draw.rect(self.screen, self.swatches[i]["color"], self.swatches[i]["rect"], border_radius=3)
+            pygame.draw.rect(self.screen, COLORS["black"], self.swatches[i]["rect"], width=1, border_radius=3)
             
         
