@@ -27,7 +27,7 @@ sb = SelectBox(screen, colors_dict["basic_colors"], paintlib.FONTS["ui_font"], c
 btn_txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Clear", 20, paintlib.BLACK)
 btn = Button(300, 250, 90, 50, paintlib.WHITE, text=btn_txt, border_width=7, border_radius=15, border_color=colors_dict["b"]["black"])
 cp = ColorPallete(screen, 50, 50, color_values=paintlib.basic_colors_list, color_button_size=(30, 30))
-cv = Canvas(screen, *screen_parts["top_middle_screen"], 10, 10, 25)
+cv = Canvas(screen, *screen_parts["canvas_pos"], 13, 12, 25)
 
 def draw_canvas(screen):
     """Canvas draw method."""
@@ -70,7 +70,20 @@ def canvas_test():
                     cv.show_grid = False
                 elif event.key == pygame.K_g:
                     cv.show_grid = True
-
+                elif event.key == pygame.K_1:
+                    cv.drawing_color = colors_dict['r']["red1"]
+                    cv.erase_mode = False
+                elif event.key == pygame.K_2:
+                    cv.drawing_color = colors_dict['b']["blue"]
+                    cv.erase_mode = False
+                elif event.key == pygame.K_3:
+                    cv.drawing_color = colors_dict['g']["green"]
+                    cv.erase_mode = False
+                elif event.key == pygame.K_e:
+                    cv.erase_mode = True
+                elif event.key == pygame.K_c:
+                    cv.clear_canvas()
+                
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_dragging = False
 
