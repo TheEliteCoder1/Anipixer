@@ -51,33 +51,43 @@ def program():
                 running = False
                 pygame.quit()
                 quit()
+
         
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_h:
                     canvas.show_grid = False
                 elif event.key == pygame.K_g:
                     canvas.show_grid = True
-                elif event.key == pygame.K_1:
-                    canvas.drawing_color = colors_dict['r']["red1"]
-                    canvas.erase_mode = False
-                elif event.key == pygame.K_2:
-                    canvas.drawing_color = colors_dict['b']["blue"]
-                    canvas.erase_mode = False
-                elif event.key == pygame.K_3:
-                    canvas.drawing_color = colors_dict['g']["green"]
-                    canvas.erase_mode = False
-                elif event.key == pygame.K_e:
-                    canvas.erase_mode = True
-                elif event.key == pygame.K_c:
-                    canvas.clear_canvas()
+            #     elif event.key == pygame.K_1:
+            #         canvas.drawing_color = paintlib.RED
+            #         canvas.erase_mode = False
+            #     elif event.key == pygame.K_2:
+            #         canvas.drawing_color = paintlib.BLUE
+            #         canvas.erase_mode = False
+            #     elif event.key == pygame.K_3:
+            #         canvas.drawing_color = paintlib.GREEN
+            #         canvas.erase_mode = False
+            #     elif event.key == pygame.K_e:
+            #         canvas.erase_mode = True
+            #     elif event.key == pygame.K_c:
+            #         canvas.clear_canvas()
                 
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_dragging = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 is_mouse_dragging = True
-
-        if is_mouse_dragging == True:
+                mpos = pygame.mouse.get_pos()
+                """Checking if the Color Pallete was used, and if so set the color."""
+                color_pallete.get_selected_color(mpos)
+                if color_pallete.selected_color != None:
+                    canvas.drawing_color = color_pallete.selected_color
+                if clear_btn.clicked(mpos):
+                    canvas.clear_canvas()
+                if erase_btn.clicked(mpos):
+                    color_pallete.selected_color = canvas.canvas_color
+                
+        if is_mouse_dragging == True: # Mouse draging tools will work here.
             mpos = pygame.mouse.get_pos()
             canvas.paint_pixel(mpos)
 

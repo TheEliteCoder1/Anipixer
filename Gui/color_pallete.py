@@ -1,7 +1,6 @@
 from .depends import *
 from Utils.colors import COLORS
 
-# Name: Anipixer
 
 class ColorPallete:
     """A Pallete of colors."""
@@ -11,6 +10,7 @@ class ColorPallete:
         self.y = y
         self.color_values = color_values
         self.color_button_size = color_button_size
+        self.selected_color = None
         self.draw_scale = 18
         self.width_factor = 2.5
         self.height_factor = 0.5
@@ -45,5 +45,10 @@ class ColorPallete:
         for i in range(len(self.swatches)):
             pygame.draw.rect(self.screen, self.swatches[i]["color"], self.swatches[i]["rect"], border_radius=3)
             pygame.draw.rect(self.screen, COLORS["black"], self.swatches[i]["rect"], width=1, border_radius=3)
-            
+
+    def get_selected_color(self, mpos):
+        """Finds the selected color of the ColorPallete."""
+        for i in range(len(self.swatches)):
+            if self.swatches[i]["rect"].collidepoint(mpos):
+                self.selected_color = self.swatches[i]["color"]
         

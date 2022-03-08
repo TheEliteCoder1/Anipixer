@@ -5,17 +5,18 @@ class Canvas:
     """Representation of a Pixel Art Canvas."""
     def __init__(self, screen, x, y, width, height, pixel_size):
         self.screen = screen
+        self.tools = ["Cursor", "Fill"]
+        self.selected_tool = self.tools[0]
         self.x = x - x/2
         self.y = y
         self.undo_count = 0
         self.width = width
         self.height = height
-        self.canvas_color = COLORS["white"]
+        self.canvas_color = (255,255,255)
         self.drawing_color = COLORS["black"]
         self.pixel_size = pixel_size
         self.hovering_color_swatch = None
         self.show_grid = True
-        self.erase_mode = False
         # Initializing the grid
         self.grid = [] # contains all the data on the canvas, including drawn pixels.
         self.initial_grid = [] # recovers original grid with no changes saved.
@@ -41,18 +42,12 @@ class Canvas:
     def paint_pixel(self, mpos):
         """Checks if the mouse clicked any of the pixels on the grid, 
         and if so apply the selected drawing color to the pixel."""
-        if self.erase_mode == False:
-            for i in range(len(self.grid)):
-                if self.grid[i]["pixel"].collidepoint(mpos):
-                    self.grid[i]["color"] = self.drawing_color # use drawing color
-        elif self.erase_mode == True:
-            for i in range(len(self.grid)):
-                if self.grid[i]["pixel"].collidepoint(mpos):
-                    self.grid[i]["color"] = self.canvas_color # use canvas color
+        for i in range(len(self.grid)):
+            if self.grid[i]["pixel"].collidepoint(mpos):
+                self.grid[i]["color"] = self.drawing_color
 
     def clear_canvas(self):
         """Resets the pixel colors on the canvas."""
         for i in range(len(self.grid)):
-            self.grid[i]["color"] = self.canvas_color        
-        
+            self.grid[i]["color"] = self.canvas_color
         
