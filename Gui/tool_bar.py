@@ -12,7 +12,7 @@ class ToolBar:
         self.icon_size = icon_size # size of all icons
         self.selected_tool = None
         self.draw_scale = 18
-        self.width_factor = 2
+        self.width_factor = 1.5
         self.height_factor = 3
         self.space_factor = self.icon_size[1]*1.5
         
@@ -33,8 +33,10 @@ class ToolBar:
         for i in range(len(self.tool_names)):
             tool_x = self.x + ((width/2) - (border_width*2) - (self.width_factor*2))
             tool_y = self.y + self.height_factor
-            if i > 0:
+            if i == 1:
                 tool_y = tool_y + self.space_factor
+            if i > 1:
+                tool_y = tool_y + (self.space_factor*i)
             data = {"name":self.tool_names[i], "pos":(tool_x, tool_y), "image":self.tool_images[i], "rect":pygame.Rect(self.x, tool_y, width, height / len(self.tool_names))}
             self.tools.append(data)
         # Drawing Tools

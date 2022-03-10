@@ -48,8 +48,8 @@ def program():
     # grid argument can also be empty list, if new project. open_canvas_from_anp('test.anp')
     canvas = Canvas(screen, *screen_parts["canvas_pos"], 15, 19, 25, grid=open_canvas_from_anp('test.anp'))
     canvas.drawing_color = color_pallete.selected_color
-    tool_names = ["Cursor", "Eraser"]
-    tool_images = [CURSORS["pointer"], CURSORS["eraser"]] # Note: Order must correspond with name order.
+    tool_names = ["Cursor", "Eraser", "Line"]
+    tool_images = [CURSORS["pointer"], CURSORS["eraser"], CURSORS["line"]] # Note: Order must correspond with name order.
     tool_bar = ToolBar(screen, 20, 100, tool_names, tool_images, icon_size=cursor_size)
     tool_bar.selected_tool = "Cursor"
     buttons = [clear_btn]
@@ -86,6 +86,8 @@ def program():
                     cursor = pygame.transform.smoothscale(pygame.image.load(CURSORS["eraser"]), cursor_size)
                     color_pallete.selected_color = canvas.canvas_color
                     canvas.drawing_color = color_pallete.selected_color
+                elif tool_bar.selected_tool == "Line":
+                    cursor = pygame.transform.smoothscale(pygame.image.load(CURSORS["line"]), cursor_size)
                 """These Buttons Below Can Be Clicked With Any Tool"""
                 if clear_btn.clicked(mpos):
                     canvas.clear_canvas()
@@ -93,7 +95,10 @@ def program():
                 
         if is_mouse_dragging == True: # Mouse draging tools will work here.
             mpos = pygame.mouse.get_pos()
-            canvas.paint_pixel(mpos)
+            if tool_bar.selected_tool == "Cursor" or tool_bar.selected_tool == "Eraser":
+                canvas.paint_pixel(mpos)
+            elif tool_bar.selected_tool == "Line":
+                canvas.line_tool(mpos)
 
         draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar)
         draw_cursor(screen, cursor, cursor_rect)

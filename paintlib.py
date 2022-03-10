@@ -6,7 +6,8 @@ import collections
 CURSORS = {
     "pointer":"UI/Cursors/ubuntu-pointer.png",
     "black_pointer":"UI/Cursors/black-pointer.png",
-    "eraser":"UI/Cursors/eraser.png"
+    "eraser":"UI/Cursors/eraser.png",
+    "line":"UI/Cursors/line.png"
 }
 
 # BASIC Colors as seperate variables (Just For Convienience, but is also a pallete)

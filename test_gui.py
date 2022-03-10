@@ -112,6 +112,8 @@ def canvas_test():
                     cv.erase_mode = True
                 elif event.key == pygame.K_c:
                     cv.clear_canvas()
+                elif event.key == pygame.K_l:
+                    cv.line_tool(mpos)
                 
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_dragging = False

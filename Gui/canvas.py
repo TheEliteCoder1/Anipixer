@@ -45,6 +45,24 @@ class Canvas:
             if self.grid[i]["pixel"].collidepoint(mpos):
                 self.grid[i]["color"] = self.drawing_color
 
+    def line_tool(self, mpos):
+        points = [] # starting and ending points
+        for i in range(len(self.grid)):
+            if self.grid[i]["pixel"].collidepoint(mpos):
+                if len(points) < 2: # we need only two points
+                    points.append({"pos":mpos, "index":i, "color":self.drawing_color, "pixel":self.grid[i]["pixel"]})
+                if len(points) == 2:
+                    start_pos, end_pos = points[0]["pos"], points[1]["pos"] # getting 2 clicked pixels on screen
+                    mid_point = ((start_pos[0] + end_pos[0]) / 2, start_pos[1] + end_pos[1] / 2)
+                    # creating mid_point pixel
+                    points[1] = {"pos":mid_point, "index":points[1]["index"]-1, "color":self.drawing_color, "pixel":pygame.Rect(*mid_point, self.pixel_size, self.pixel_size)}
+                    for i in range(len(points)):
+                        self.grid[points[i]["index"]]["pixel"] = points[i]["pixel"]
+                        self.grid[points[i]["index"]]["color"] = points[i]["color"]
+                        
+            
+        
+    
     def clear_canvas(self):
         """Resets the pixel colors on the canvas."""
         for i in range(len(self.grid)):
