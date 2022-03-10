@@ -18,9 +18,9 @@ def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_
     for button in buttons: # drawing all buttons
         button.draw(screen)
     # Drawing color pallete
-    color_pallete.draw(outline=True, color=colors_dict['c']["crimson"], border_color=colors_dict['c']['crimson'], border_width=7, border_radius=15, swatch_outline=WHITE)
+    color_pallete.draw(outline=True, color=WHITE, border_color=colors_dict['c']['crimson'], border_width=7, border_radius=15, swatch_outline=BLACK)
     canvas.draw(canvas.grid, canvas.canvas_boundary)
-    tool_bar.draw(outline=True, color=paintlib.WHITE, border_color=colors_dict['c']['crimson'], border_width=7, border_radius=15)
+    tool_bar.draw(outline=True, color=WHITE, border_color=colors_dict['c']['crimson'], border_width=7, border_radius=15)
 
 
 """Running Application."""
