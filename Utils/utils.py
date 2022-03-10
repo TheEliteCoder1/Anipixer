@@ -53,3 +53,15 @@ def get_darker_color(color: tuple, factor: int):
     """Returns the darker version of a given rgb factor"""
     darker_color = (round(255 - (color[0] / factor)), round(255 - (color[1] / factor)), round(255 - (color[2] / factor)))
     return darker_color
+
+def load_json_data(json_file):
+    with open(json_file, 'r') as sf:
+        data = sf.read()
+        sf.close()
+    jsonified_data = json.loads(data)
+    return jsonified_data
+
+def save_json_data(json_file, data):
+    file=open(json_file, 'w').close()
+    with open(json_file, 'w') as f:
+        json.dump(data, f, indent=4)

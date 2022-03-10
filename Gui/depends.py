@@ -2,5 +2,6 @@
 import pygame
 import sys
 import typing
+import json
 pygame.init()
 pygame.font.init()

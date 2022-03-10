@@ -24,6 +24,7 @@ class Button:
         if self.border_width > 0: # wether we can even see the border
             pygame.draw.rect(screen, self.color, self.rect, border_radius=self.border_radius)
             pygame.draw.rect(screen, self.border_color, self.rect, width=self.border_width, border_radius=self.border_radius)
+            pygame.draw.rect(screen, (0,0,0), self.rect, width=1, border_radius=self.border_radius)
         else:
             pygame.draw.rect(screen, self.color, self.rect, border_radius=self.border_radius)
 

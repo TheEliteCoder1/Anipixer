@@ -6,10 +6,12 @@ from Gui.select_box import SelectBox
 from Gui.button import Button
 from Gui.color_pallete import ColorPallete
 from Gui.canvas import Canvas
+from Gui.icon import Icon
+from Gui.tool_bar import ToolBar
 from Utils.utils import *
 from Utils.colors import get_colors_list
 import paintlib
-from paintlib import colors_dict
+from paintlib import colors_dict, CURSORS
 
 """Testing GUI Runtime Parameters"""
 sw, sh = 500, 500
@@ -24,10 +26,17 @@ clock = pygame.time.Clock()
 """Instantize Test Classes Here"""
 txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Basic Colors", 25, paintlib.WHITE, paintlib.BLACK)
 sb = SelectBox(screen, colors_dict["basic_colors"], paintlib.FONTS["ui_font"], colors_dict['a']['azure1'], label_text=txt, selection_color=paintlib.BLACK)
-btn_txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Clear", 20, paintlib.BLACK)
+btn_txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Clear", font_size=50, paintlib.BLACK)
 btn = Button(300, 250, 90, 50, paintlib.WHITE, text=btn_txt, border_width=7, border_radius=15, border_color=colors_dict["b"]["black"])
 cp = ColorPallete(screen, 50, 50, color_values=paintlib.basic_colors_list, color_button_size=(30, 30))
-cv = Canvas(screen, *screen_parts["canvas_pos"], 13, 12, 25)
+cv = Canvas(screen, *screen_parts["canvas_pos"], 13, 12, 25, grid=[])
+tool_names = ["Cursor", "Eraser"]
+tool_images = [CURSORS["pointer"], CURSORS["eraser"]] # Note: Order must correspond with name order.
+tb = ToolBar(screen, 50, 50, tool_names, tool_images, icon_size=cursor_size)
+
+def draw_tool_bar(screen):
+    screen.fill(paintlib.WHITE)
+    tb.draw(outline=True, color=paintlib.WHITE, border_color=colors_dict['c']['crimson'], border_width=5, border_radius=5)
 
 def draw_canvas(screen):
     """Canvas draw method."""
@@ -50,6 +59,26 @@ def draw_button(screen):
     """Button draw method"""
     screen.fill(paintlib.WHITE)
     btn.draw(screen)
+
+def tool_bar_test():
+    """Sample ToolBar Test"""
+    running = True
+    pygame.mouse.set_visible(False)
+    while running:
+        clock.tick(refresh_rate)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+                quit()
+
+            if event.type == pygame.KEYDOWN:
+                pass
+
+        draw_tool_bar(screen)
+        draw_cursor(screen, cursor, cursor_rect)
+        pygame.display.update()
 
 def canvas_test():
     """Sample Canvas Test"""

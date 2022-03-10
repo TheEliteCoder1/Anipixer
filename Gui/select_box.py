@@ -12,7 +12,6 @@ class SelectBox:
         self.font = font
         self.text_color = text_color
         self.text_background = text_background
-        self.text_idx = 0
         self.selected_rect = None
         self.hovering_rect = None
         self.selection_color = selection_color
