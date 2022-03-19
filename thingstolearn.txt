@@ -1,5 +1,5 @@
 This document describes things I want to learn when working on this Hobby-Project.
 1. Creating a custom GUI framework and it's Components using a basic graphics library like pygame.
 2. Developing UI's that are directly connected to python data structures like Lists.
-3. Being able to write a fairly complex program in singleton or solo work.
+3. Being able to write a fairly complex program by myself (solo development).
 4. Writing flexible, readable and dynamic code.

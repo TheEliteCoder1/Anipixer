@@ -12,6 +12,7 @@ class ColorPallete:
         self.color_button_size = color_button_size
         self.selected_color = (0,0,0)
         self.draw_scale = 18
+        self.base_height = 8
         self.width_factor = 2.75
         self.height_factor = 0.5
 
@@ -19,7 +20,7 @@ class ColorPallete:
         """Draws the ColorPallete to the screen every frame."""
         # Drawing Color Pallete Body
         width = len(self.color_values)*self.draw_scale*self.width_factor
-        height = len(self.color_values)*self.draw_scale*self.height_factor
+        height = self.base_height*self.draw_scale*self.height_factor
         self.box_rect = pygame.Rect(self.x, self.y-self.draw_scale, width, height)
         if outline == True:
             pygame.draw.rect(self.screen, color, self.box_rect, border_radius=border_radius)
@@ -45,7 +46,10 @@ class ColorPallete:
             self.swatches.append(data)
         for i in range(len(self.swatches)):
             pygame.draw.rect(self.screen, self.swatches[i]["color"], self.swatches[i]["rect"], border_radius=3)
-            pygame.draw.rect(self.screen, swatch_outline, self.swatches[i]["rect"], width=3, border_radius=3)
+            if self.selected_color != self.swatches[i]["color"]:
+                pygame.draw.rect(self.screen, swatch_outline, self.swatches[i]["rect"], width=3, border_radius=3)
+            else:
+                pygame.draw.rect(self.screen, COLORS["black"], self.swatches[i]["rect"], width=3, border_radius=3)
 
     def get_selected_color(self, mpos):
         """Finds the selected color of the ColorPallete."""

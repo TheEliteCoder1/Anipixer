@@ -60,9 +60,6 @@ class Canvas:
                         self.grid[points[i]["index"]]["pixel"] = points[i]["pixel"]
                         self.grid[points[i]["index"]]["color"] = points[i]["color"]
                         
-            
-        
-    
     def clear_canvas(self):
         """Resets the pixel colors on the canvas."""
         for i in range(len(self.grid)):

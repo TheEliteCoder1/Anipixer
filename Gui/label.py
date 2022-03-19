@@ -1,6 +1,19 @@
 from .depends import *
 from Utils import utils
 
+
+class TextStyle:
+    """Stores text style information without text, just the formatting."""
+    def __init__(self, font_file: str, 
+    font_size: int, color: tuple, background_color=None, bold=False, italic=False, underline=False):
+        self.font_file = font_file
+        self.font_size = font_size
+        self.color = color
+        self.background_color = background_color
+        self.bold = bold
+        self.italic = italic
+        self.underline = underline
+
 class TextNode:
     """Text Object Representation aside functional `draw_text`, without the position
     argument. Drawing method takes positional argument."""
@@ -21,7 +34,7 @@ class TextNode:
 
         
 class Label:
-    """Text Object Representation aside functional `draw_text`."""
+    """Text Object Representation aside functional `draw_text`. Comes with the position argument."""
     def __init__(self, screen: pygame.Surface, font_file: str, text: str, 
     font_size: int, color: tuple, pos: tuple, background_color=None, bold=False, italic=False, underline=False):
         self.screen = screen

@@ -14,7 +14,7 @@ def draw_text(screen: pygame.Surface, font_file: str, text: str,
     textRect.center = pos
     screen.blit(t, textRect)
 
-def get_text_rect(font_file, text, font_size, pos):
+def get_text_rect(font_file, text, font_size, pos) -> pygame.Rect:
     """Returns the bounding rectangle of a text object drawn to the screen."""
     font = pygame.font.Font(font_file, font_size)
     t = font.render(text, 1, (0,0,0))

@@ -26,8 +26,8 @@ clock = pygame.time.Clock()
 """Instantize Test Classes Here"""
 txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Basic Colors", 25, paintlib.WHITE, paintlib.BLACK)
 sb = SelectBox(screen, colors_dict["basic_colors"], paintlib.FONTS["ui_font"], colors_dict['a']['azure1'], label_text=txt, selection_color=paintlib.BLACK)
-btn_txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Clear", font_size=50, paintlib.BLACK)
-btn = Button(300, 250, 90, 50, paintlib.WHITE, text=btn_txt, border_width=7, border_radius=15, border_color=colors_dict["b"]["black"])
+btn_txt = TextNode(screen, paintlib.FONTS["ui_thick_font"], "Clear", font_size=50, color=paintlib.BLACK)
+btn = Button(300, 250, 150, 70, paintlib.WHITE, text=btn_txt, border_width=7, border_radius=15, border_color=colors_dict["b"]["black"])
 cp = ColorPallete(screen, 50, 50, color_values=paintlib.basic_colors_list, color_button_size=(30, 30))
 cv = Canvas(screen, *screen_parts["canvas_pos"], 13, 12, 25, grid=[])
 tool_names = ["Cursor", "Eraser"]
@@ -41,7 +41,7 @@ def draw_tool_bar(screen):
 def draw_canvas(screen):
     """Canvas draw method."""
     screen.fill(paintlib.WHITE)
-    cv.draw()
+    cv.draw(cv.grid, cv.canvas_boundary)
 
 def draw_select_box(screen, bg_color):
     """SelectBox draw method."""
