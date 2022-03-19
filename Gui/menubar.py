@@ -1,4 +1,4 @@
-from Gui.depends import *
+from .depends import *
 
 class MenuBar:
     def __init__(self, screen: pygame.Surface, menu_list: list, bar_height: int):

@@ -1,6 +1,6 @@
-from Gui.depends import *
+from .depends import *
 from .icon import Icon
-from Gui.label import TextStyle, TextNode
+from .label import TextStyle, TextNode
 from Utils.utils import get_text_rect, draw_text
 
 class ToolBar:

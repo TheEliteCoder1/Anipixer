@@ -26,7 +26,7 @@ def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_
 """Running Application."""
 def program():
     """Runtime Variables"""
-    sw, sh = 500, 620
+    sw, sh = 700, 620
     screen = pygame.display.set_mode((sw, sh), HWSURFACE|DOUBLEBUF|RESIZABLE)
     screen_title = "Anipixer"
     pygame.display.set_caption(screen_title)
@@ -42,7 +42,8 @@ def program():
     pygame.mouse.set_visible(False)
     """Setting Up User Interface."""
     color_pallete = ColorPallete(screen, 20, 30, color_values=basic_colors_list, color_button_size=(30, 30))
-    clear_btn_x, clear_btn_y = screen_parts["screen_width"] - 270,  color_pallete.y/2+5
+    color_pallete_width = len(color_pallete.color_values)*color_pallete.draw_scale*color_pallete.width_factor
+    clear_btn_x, clear_btn_y = color_pallete_width+35,  color_pallete.y/2+5
     clear_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Clear", 25, WHITE)
     clear_btn = Button(clear_btn_x, clear_btn_y, 100, 55, color=colors_dict['r']["red3"], text=clear_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
     tool_names = ["Cursor", "Eraser"]
@@ -95,6 +96,8 @@ def program():
 
             elif event.type == VIDEORESIZE:
                 screen = pygame.display.set_mode(event.size, HWSURFACE|DOUBLEBUF|RESIZABLE)
+                sw, sh = screen.get_width(), screen.get_height()
+                max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
                 
         if is_mouse_dragging == True: # Mouse draging tools will work here.
             mpos = pygame.mouse.get_pos()
