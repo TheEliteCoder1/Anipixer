@@ -6,6 +6,7 @@ from Gui.icon import Icon
 from Gui.tool_bar import ToolBar
 from Gui.color_pallete import ColorPallete
 from Gui.canvas import Canvas
+from Gui.menu_bar import MenuBar
 from Utils.utils import *
 import paintlib
 from paintlib import basic_colors_list
@@ -14,11 +15,12 @@ from paintlib import WHITE, BLACK, CURSORS, FONTS, colors_dict
 
 
 """Drawing Interface to Screen."""
-def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid):
+def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar):
     screen.fill(app_background_color) # setting the background color
     for button in buttons: # drawing all buttons
         button.draw(screen)
     # Drawing color pallete
+    menu_bar.draw()
     color_pallete.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15, swatch_outline=WHITE)
     canvas.draw(canvas.grid, canvas.canvas_boundary, show_grid)
     tool_bar.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15)
@@ -27,7 +29,7 @@ def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_
 """Running Application."""
 def program():
     """Runtime Variables"""
-    sw, sh = 700, 620
+    sw, sh = 700, 640
     screen = pygame.display.set_mode((sw, sh), HWSURFACE|DOUBLEBUF|RESIZABLE)
     screen_title = "Anipixer"
     pygame.display.set_caption(screen_title)
@@ -42,24 +44,27 @@ def program():
     is_mouse_dragging = False
     pygame.mouse.set_visible(False)
     """Setting Up User Interface."""
-    color_pallete = ColorPallete(screen, 20, 30, color_values=basic_colors_list, color_button_size=(30, 30))
+    color_pallete = ColorPallete(screen, 20, 50, color_values=basic_colors_list, color_button_size=(30, 30))
     color_pallete_width = len(color_pallete.color_values)*color_pallete.draw_scale*color_pallete.width_factor
-    clear_btn_x, clear_btn_y = color_pallete_width+35,  color_pallete.y/2+5
+    clear_btn_x, clear_btn_y = color_pallete_width+35,  color_pallete.y/2+15
     clear_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Clear", 25, WHITE)
     clear_btn = Button(clear_btn_x, clear_btn_y, 100, 55, color=colors_dict['r']["red3"], text=clear_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
-    grid_toggle_btn = ToggleButton(screen, color_pallete_width+clear_btn.width+45, clear_btn_y, clear_btn.width, clear_btn.height, (106, 209, 4), colors_dict['r']["red3"], 7, 15, border_color=colors_dict['b']['black'])
+    grid_toggle_btn = ToggleButton(screen, color_pallete_width+clear_btn.width+45, clear_btn_y, clear_btn.width+20, clear_btn.height, (106, 209, 4), colors_dict['r']["red3"], 7, 15, border_color=colors_dict['b']['black'], help_text='Grid:')
+    grid_toggle_btn.text.font_size = 23
     show_grid = grid_toggle_btn.is_on
     tool_names = ["Cursor", "Eraser"]
     tool_images = [CURSORS["pointer"], CURSORS["eraser"]] # Note: Order must correspond with name order.
-    tool_bar = ToolBar(screen, 20, 100, tool_names, tool_images, icon_size=cursor_size)
+    tool_bar = ToolBar(screen, 20, 120, tool_names, tool_images, icon_size=cursor_size)
     tool_bar.selected_tool = "Cursor"
     tool_bar_width = tool_bar.base_width*tool_bar.draw_scale*tool_bar.width_factor
     # note: grid argument can also be empty list
     max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
-    canvas = Canvas(screen, *(tool_bar_width*3, screen_parts["canvas_pos"][1]), *max_canvas_presets, grid=[])
+    canvas = Canvas(screen, *(tool_bar_width*3, screen_parts["canvas_pos"][1]+20), *max_canvas_presets, grid=[])
     canvas.drawing_color = color_pallete.selected_color
     # scenario: test project loading:
     # open_canvas_from_anp('testFiles/test.anp')
+    menu_names_list = ["File", "Export"]
+    menu_bar = MenuBar(screen, menu_names_list, 25)
     buttons = [clear_btn, grid_toggle_btn]
     while running:
 
@@ -106,7 +111,7 @@ def program():
                 canvas.paint_pixel(mpos)
     
 
-        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid)
+        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()
 

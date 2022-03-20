@@ -16,7 +16,7 @@ class ToolBar:
         self.draw_scale = 18
         self.width_factor = 1.5
         self.base_width = 3
-        self.icon_label_spacing = 10
+        self.icon_label_spacing = 15
         self.height_factor = 3
         self.space_factor = self.icon_size[1]*1.5
         
@@ -62,10 +62,11 @@ class ToolBar:
             for i in range(len(self.tools)):
                 # creating a text node object from a given text_style, and drawing it alongside it's icon.
                 icon_name = TextNode(self.screen, text_style.font_file, self.tools[i]["name"], text_style.font_size, text_style.color, text_style.background_color, text_style.bold, text_style.italic, text_style.underline)
-                icon_name_txt_rect = get_text_rect(icon_name.font_file, icon_name.text, icon_name.font_size, self.tools[i]["pos"])
+                pos = (self.tools[i]["rect"].x+(self.icon_label_spacing*1.9), self.tools[i]["rect"].center[1]-5)
+                icon_name_txt_rect = get_text_rect(icon_name.font_file, icon_name.text, icon_name.font_size, pos)
                 icon_image = Icon(self.tools[i]["image"], *self.icon_size)
-                icon_name.draw(self.tools[i]["pos"]) # draw the text node at the center.
-                icon_image.draw(self.screen, *(icon_name_txt_rect.width + self.icon_label_spacing, self.tools[i]["pos"][1])) # draw to the right of the text node.
+                icon_name.draw(pos) # draw the text node at the center.
+                icon_image.draw(self.screen, *(icon_name_txt_rect.width + (self.icon_label_spacing*1.9), self.tools[i]["rect"][1])) # draw to the right of the text node.
 
 
     def get_selected_tool(self, mpos):

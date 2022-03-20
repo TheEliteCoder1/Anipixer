@@ -4,7 +4,7 @@ from Utils.colors import COLORS
 
 class ToggleButton:
     """A clickable object that turns on or off when clicked."""
-    def __init__(self, screen, x, y, width, height, on_color, off_color, border_width=0, border_radius=0, border_color=COLORS["black"], font_size=20):
+    def __init__(self, screen, x, y, width, height, on_color, off_color, border_width=0, border_radius=0, border_color=COLORS["black"], font_size=20, help_text=None):
         self.screen = screen
         self.x = x
         self.y = y
@@ -18,16 +18,17 @@ class ToggleButton:
         self.border_width = border_width
         self.border_radius = border_radius
         self.border_color = border_color
+        self.help_text = help_text
 
     def draw(self, screen):
         """Draws the ToggleButton to the screen every frame."""
         screen = self.screen
         if self.is_on == False:
             color = self.off_color
-            self.text.text = "Off" # sets the text of the toggle button depending on the state of `is_on`.
+            self.text.text = self.help_text + " Off" if self.help_text != None else "Off" # sets the text of the toggle button depending on the state of `is_on`.
         elif self.is_on == True:
             color = self.on_color
-            self.text.text = "On"
+            self.text.text = self.help_text + " On" if self.help_text != None else "On"
 
         if self.border_width > 0: # wether we can even see the border
             pygame.draw.rect(screen, color, self.rect, border_radius=self.border_radius)
