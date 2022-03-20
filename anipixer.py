@@ -1,5 +1,6 @@
 from Gui.depends import pygame
 from Gui.button import Button
+from Gui.toggle_button import ToggleButton
 from Gui.label import TextNode
 from Gui.icon import Icon
 from Gui.tool_bar import ToolBar
@@ -13,13 +14,13 @@ from paintlib import WHITE, BLACK, CURSORS, FONTS, colors_dict
 
 
 """Drawing Interface to Screen."""
-def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar):
+def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid):
     screen.fill(app_background_color) # setting the background color
     for button in buttons: # drawing all buttons
         button.draw(screen)
     # Drawing color pallete
     color_pallete.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15, swatch_outline=WHITE)
-    canvas.draw(canvas.grid, canvas.canvas_boundary)
+    canvas.draw(canvas.grid, canvas.canvas_boundary, show_grid)
     tool_bar.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15)
 
 
@@ -46,6 +47,8 @@ def program():
     clear_btn_x, clear_btn_y = color_pallete_width+35,  color_pallete.y/2+5
     clear_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Clear", 25, WHITE)
     clear_btn = Button(clear_btn_x, clear_btn_y, 100, 55, color=colors_dict['r']["red3"], text=clear_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
+    grid_toggle_btn = ToggleButton(screen, color_pallete_width+clear_btn.width+45, clear_btn_y, clear_btn.width, clear_btn.height, (106, 209, 4), colors_dict['r']["red3"], 7, 15, border_color=colors_dict['b']['black'])
+    show_grid = grid_toggle_btn.is_on
     tool_names = ["Cursor", "Eraser"]
     tool_images = [CURSORS["pointer"], CURSORS["eraser"]] # Note: Order must correspond with name order.
     tool_bar = ToolBar(screen, 20, 100, tool_names, tool_images, icon_size=cursor_size)
@@ -57,7 +60,7 @@ def program():
     canvas.drawing_color = color_pallete.selected_color
     # scenario: test project loading:
     # open_canvas_from_anp('testFiles/test.anp')
-    buttons = [clear_btn]
+    buttons = [clear_btn, grid_toggle_btn]
     while running:
 
         for event in pygame.event.get():
@@ -67,12 +70,6 @@ def program():
                 running = False
                 pygame.quit()
                 quit()
-        
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_h:
-                    canvas.show_grid = False
-                elif event.key == pygame.K_g:
-                    canvas.show_grid = True
                 
             if event.type == pygame.MOUSEBUTTONUP:
                 is_mouse_dragging = False
@@ -93,6 +90,9 @@ def program():
                 """These Buttons Below Can Be Clicked With Any Tool"""
                 if clear_btn.clicked(mpos):
                     canvas.clear_canvas()
+                if grid_toggle_btn.toggle(mpos):
+                    show_grid = grid_toggle_btn.is_on
+
 
             elif event.type == VIDEORESIZE:
                 screen = pygame.display.set_mode(event.size, HWSURFACE|DOUBLEBUF|RESIZABLE)
@@ -105,7 +105,7 @@ def program():
                 canvas.paint_pixel(mpos)
     
 
-        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar)
+        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()
 

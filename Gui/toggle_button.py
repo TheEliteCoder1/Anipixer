@@ -19,31 +19,27 @@ class ToggleButton:
         self.border_radius = border_radius
         self.border_color = border_color
 
-    def draw(self):
-        """Draws the button to the screen every frame."""
+    def draw(self, screen):
+        """Draws the ToggleButton to the screen every frame."""
+        screen = self.screen
         if self.is_on == False:
-            color = self.on_color
-        elif self.is_on == True:
             color = self.off_color
-        if self.border_width > 0: # wether we can even see the border
-            pygame.draw.rect(self.screen, color, self.rect, border_radius=self.border_radius)
-            pygame.draw.rect(self.screen, self.border_color, self.rect, width=self.border_width, border_radius=self.border_radius)
-            pygame.draw.rect(self.screen, (0,0,0), self.rect, width=1, border_radius=self.border_radius)
-        else:
-            pygame.draw.rect(self.screen, color, self.rect, border_radius=self.border_radius)
-
-        if self.is_on == False:
             self.text.text = "Off" # sets the text of the toggle button depending on the state of `is_on`.
         elif self.is_on == True:
+            color = self.on_color
             self.text.text = "On"
+
+        if self.border_width > 0: # wether we can even see the border
+            pygame.draw.rect(screen, color, self.rect, border_radius=self.border_radius)
+            pygame.draw.rect(screen, self.border_color, self.rect, width=self.border_width, border_radius=self.border_radius)
+            pygame.draw.rect(screen, (0,0,0), self.rect, width=1, border_radius=self.border_radius)
+        else:
+            pygame.draw.rect(self.screen, color, self.rect, border_radius=self.border_radius)
 
         self.text.draw(pos=self.rect.center)
 
     def toggle(self, mpos):
         """Toggles the Button to be On or Off."""
         if self.rect.collidepoint(mpos):
-            if self.is_on == False:
-                self.is_on = True
-            elif self.is_on == True:
-                self.is_on == False
+            self.is_on = not self.is_on
 
