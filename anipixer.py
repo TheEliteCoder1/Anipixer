@@ -81,6 +81,9 @@ def program():
                 tool_bar.get_selected_tool(mpos)
                 # always check for color pallete clicks
                 color_pallete.get_selected_color(mpos)
+                # check for toggle buttons
+                grid_toggle_btn.toggle(mpos)
+                show_grid = grid_toggle_btn.is_on
                 if tool_bar.selected_tool == "Cursor":
                     cursor = pygame.transform.smoothscale(pygame.image.load(CURSORS["pointer"]), cursor_size) # change apperance for the tool
                     canvas.drawing_color = color_pallete.selected_color # use color from pallete
@@ -90,8 +93,6 @@ def program():
                 """These Buttons Below Can Be Clicked With Any Tool"""
                 if clear_btn.clicked(mpos):
                     canvas.clear_canvas()
-                if grid_toggle_btn.toggle(mpos):
-                    show_grid = grid_toggle_btn.is_on
 
 
             elif event.type == VIDEORESIZE:
