@@ -12,6 +12,7 @@ class MenuBar:
         self.menu_names_list = menu_names_list
         self.menu_options_dict = menu_options_dict
         self.hovering_menu_title = None
+        self.hovering_option = None
         self.options = None
         self.bar_height = bar_height
         self.hover_color = hover_color
@@ -49,7 +50,7 @@ class MenuBar:
             self.menu_titles.append({"pos":(menu_title_x, menu_title_y), "title":menu_title, "rect":menu_title_rect, "options":menu_options, "index":i})
 
         # checking for the hovered menu titles.
-        if self.hovering_menu_title != None:
+        if self.hovering_menu_title != None and self.is_hovering(mpos) == True:
             for i in range(len(self.menu_titles)):
                 if self.menu_titles[i]["title"].text == self.hovering_menu_title.text:
                     self.menu_titles[i]["title"].color = self.hover_color
@@ -81,19 +82,27 @@ class MenuBar:
                     option_text_rect = pygame.Rect(option_x, option_y, self.max_option_text_rect, self.menu_titles[self.options["index"]]["rect"].height)
                 self.options_list.append({"pos":(option_x, option_y), "text":option_text, "rect":option_text_rect})
 
+
         if hasattr(self, "options_list"):
             for i in range(len(self.options_list)):
-                pygame.draw.rect(self.screen, bar_color, self.options_list[i]["rect"])
+                if self.hovering_option != None and self.options_list[i]["text"].text == self.hovering_option:
+                    self.options_list[i]["text"].color = self.hover_color
+                    pygame.draw.rect(self.screen, self.menu_hover_color, self.options_list[i]["rect"])
+                else:
+                    pygame.draw.rect(self.screen, bar_color, self.options_list[i]["rect"])
                 pygame.draw.rect(self.screen, (0,0,0), self.options_list[i]["rect"], 1)
                 self.options_list[i]["text"].draw(self.options_list[i]["rect"].center)
 
 
     def onhover(self, mpos):
         """Performs an action if the mouse is hovering over one of the menus in the menu bar."""
-        if hasattr(self, "menu_titles") and hasattr(self, "bar_rect"):
+        if hasattr(self, "menu_titles") and hasattr(self, "bar_rect") and hasattr(self, "options_list"):
             for i in range(len(self.menu_titles)):
                 if self.menu_titles[i]["rect"].collidepoint(mpos) and self.bar_rect.collidepoint(mpos):
                     self.hovering_menu_title = self.menu_titles[i]["title"]
+            for i in range(len(self.options_list)):
+                if self.options_list[i]["rect"].collidepoint(mpos):
+                    self.hovering_option = self.options_list[i]["text"].text
 
     def is_hovering(self, mpos):
         if hasattr(self, "bar_rect"):

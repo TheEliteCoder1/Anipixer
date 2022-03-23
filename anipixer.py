@@ -22,7 +22,7 @@ def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_
     color_pallete.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15, swatch_outline=WHITE)
     canvas.draw(canvas.grid, canvas.canvas_boundary, show_grid)
     tool_bar.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15)
-    menu_bar.draw(mpos=mpos, bar_color=colors_dict["g"]["goldenrod1"], text_style=TextStyle("UI/Fonts/fira.ttf", 20, colors_dict['g']['gray6'], None))
+    menu_bar.draw(mpos=mpos, bar_color=colors_dict['r']['royalblue1'], text_style=TextStyle("UI/Fonts/fira.ttf", 20, WHITE, None))
 
 
 """Running Application."""
@@ -67,7 +67,7 @@ def program():
         "File":["Open", "Save"],
         "Export":["PNG"]
     }
-    menu_bar = MenuBar(screen, menu_names_list, menu_options_dict=menu_options_dict, bar_height=25, hover_color=(0,0,0), menu_hover_color=colors_dict["b"]["bisque1"])
+    menu_bar = MenuBar(screen, menu_names_list, menu_options_dict=menu_options_dict, bar_height=25, hover_color=(0,0,0), menu_hover_color=WHITE)
     buttons = [clear_btn, grid_toggle_btn]
     mpos = pygame.mouse.get_pos()
     while running:
