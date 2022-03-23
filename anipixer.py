@@ -1,7 +1,6 @@
-from Gui.depends import pygame
 from Gui.button import Button
 from Gui.toggle_button import ToggleButton
-from Gui.label import TextNode
+from Gui.label import TextNode, TextStyle
 from Gui.icon import Icon
 from Gui.tool_bar import ToolBar
 from Gui.color_pallete import ColorPallete
@@ -15,15 +14,15 @@ from paintlib import WHITE, BLACK, CURSORS, FONTS, colors_dict
 
 
 """Drawing Interface to Screen."""
-def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar):
+def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos):
     screen.fill(app_background_color) # setting the background color
     for button in buttons: # drawing all buttons
         button.draw(screen)
     # Drawing color pallete
-    menu_bar.draw()
     color_pallete.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15, swatch_outline=WHITE)
     canvas.draw(canvas.grid, canvas.canvas_boundary, show_grid)
     tool_bar.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15)
+    menu_bar.draw(mpos=mpos, bar_color=colors_dict["g"]["goldenrod1"], text_style=TextStyle("UI/Fonts/fira.ttf", 20, colors_dict['g']['gray6'], None))
 
 
 """Running Application."""
@@ -64,8 +63,13 @@ def program():
     # scenario: test project loading:
     # open_canvas_from_anp('testFiles/test.anp')
     menu_names_list = ["File", "Export"]
-    menu_bar = MenuBar(screen, menu_names_list, 25)
+    menu_options_dict = {
+        "File":["Open", "Save"],
+        "Export":["PNG"]
+    }
+    menu_bar = MenuBar(screen, menu_names_list, menu_options_dict=menu_options_dict, bar_height=25, hover_color=(0,0,0), menu_hover_color=colors_dict["b"]["bisque1"])
     buttons = [clear_btn, grid_toggle_btn]
+    mpos = pygame.mouse.get_pos()
     while running:
 
         for event in pygame.event.get():
@@ -76,16 +80,18 @@ def program():
                 pygame.quit()
                 quit()
                 
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONUP: # if the mouse is over the screen, not clicking.
                 is_mouse_dragging = False
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN: # if the mouse was clicked.
                 is_mouse_dragging = True
                 mpos = pygame.mouse.get_pos()
                 # First check tool being used
                 tool_bar.get_selected_tool(mpos)
                 # always check for color pallete clicks
                 color_pallete.get_selected_color(mpos)
+                # handles menu bar
+                menu_bar.open_menu(mpos)
                 # check for toggle buttons
                 grid_toggle_btn.toggle(mpos)
                 show_grid = grid_toggle_btn.is_on
@@ -99,11 +105,15 @@ def program():
                 if clear_btn.clicked(mpos):
                     canvas.clear_canvas()
 
+            elif event.type == pygame.MOUSEMOTION: # checks if the mouse is moving
+                mpos = pygame.mouse.get_pos()
+                menu_bar.onhover(mpos)
 
-            elif event.type == VIDEORESIZE:
+            elif event.type == VIDEORESIZE: # window resize handler
                 screen = pygame.display.set_mode(event.size, HWSURFACE|DOUBLEBUF|RESIZABLE)
                 sw, sh = screen.get_width(), screen.get_height()
                 max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
+                menu_bar.bar_width = sw
                 
         if is_mouse_dragging == True: # Mouse draging tools will work here.
             mpos = pygame.mouse.get_pos()
@@ -111,7 +121,7 @@ def program():
                 canvas.paint_pixel(mpos)
     
 
-        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar)
+        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()
 

@@ -22,7 +22,8 @@ GREEN  = colors.COLORS["green1"]
 
 FONTS = {
     "ui_font":"UI/Fonts/proxima_nova.ttf",
-    "ui_thick_font":"UI/Fonts/opensans_extrabold.ttf"
+    "ui_thick_font":"UI/Fonts/opensans_extrabold.ttf",
+    "menu_bar":"UI/Fonts/fira.ttf"
 }
 
 """Color Dictionary containing all colors availible."""
