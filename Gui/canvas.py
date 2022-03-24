@@ -35,7 +35,7 @@ class Canvas:
         self.initial_grid = self.grid # recovers original grid with no changes saved.
         self.canvas_boundary = pygame.Rect(*self.grid[0]["pixel"].topleft, self.width*self.pixel_size, self.height*self.pixel_size)   
         
-    def draw(self, grid, canvas_boundary, show_grid):
+    def draw(self, grid, canvas_boundary, show_grid, select_mode):
         """Draws the Canvas to the screen every frame."""
         # Drawing Canvas
         for pixel in self.grid:
@@ -46,6 +46,10 @@ class Canvas:
                 pygame.draw.rect(self.screen, COLORS["black"], pixel["pixel"], width=1)
         # Draw Canvas Boundary
         pygame.draw.rect(self.screen, COLORS["black"], canvas_boundary, width=1)
+
+        # Draw selected pixel
+        if select_mode == True:
+            pass
 
     def paint_pixel(self, mpos):
         """Checks if the mouse clicked any of the pixels on the grid, 

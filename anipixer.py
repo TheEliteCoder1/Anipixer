@@ -23,14 +23,14 @@ def path_leaf(path):
     return tail or ntpath.basename(head)
 
 """Drawing Interface to Screen."""
-def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title):
+def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title, select_mode):
     screen.fill(app_background_color) # setting the background color
     pygame.display.set_caption(screen_title)
     for button in buttons: # drawing all buttons
         button.draw(screen)
     # Drawing color pallete
     color_pallete.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15, swatch_outline=WHITE)
-    canvas.draw(canvas.grid, canvas.canvas_boundary, show_grid)
+    canvas.draw(canvas.grid, canvas.canvas_boundary, show_grid, select_mode)
     tool_bar.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15)
     menu_bar.draw(mpos=mpos, bar_color=colors_dict['r']['royalblue1'], text_style=TextStyle("UI/Fonts/fira.ttf", 20, WHITE, None), hide_options=hide_options)
 
@@ -67,11 +67,13 @@ def program():
     tool_bar.selected_tool = "Cursor"
     working_file = None
     tool_bar_width = tool_bar.base_width*tool_bar.draw_scale*tool_bar.width_factor
+    tool_bar_height = len(tool_bar.tool_names)*tool_bar.draw_scale*tool_bar.height_factor
     # note: grid argument can also be empty list
     max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
-    canvas = Canvas(screen, *(tool_bar_width*3, screen_parts["canvas_pos"][1]+20), *max_canvas_presets, grid=[])
+    canvas = Canvas(screen, *(tool_bar_width*4, screen_parts["canvas_pos"][1]+20), *max_canvas_presets, grid=[])
     canvas.drawing_color = color_pallete.selected_color
-    clicked = False
+    select_toggle_btn = ToggleButton(screen, x=tool_bar.x, y=tool_bar_height*3, width=clear_btn.width+20, height=clear_btn.height, on_color=(106, 209, 4), off_color=colors_dict['r']["red3"], border_width=7, border_radius=15, border_color=colors_dict['b']['black'], help_text='Select:' )
+    select_mode = select_toggle_btn.is_on
     # scenario: test project loading:
     # open_canvas_from_anp('testFiles/test.anp')
     menu_names_list = ["File", "Export"]
@@ -81,7 +83,7 @@ def program():
     }
     menu_bar = MenuBar(screen, menu_names_list, menu_options_dict=menu_options_dict, bar_height=25, hover_color=(0,0,0), menu_hover_color=WHITE)
     hide_options = False
-    buttons = [clear_btn, grid_toggle_btn]
+    buttons = [clear_btn, grid_toggle_btn, select_toggle_btn]
     mpos = pygame.mouse.get_pos()
     while running:
 
@@ -138,6 +140,8 @@ def program():
                 # check for toggle buttons
                 grid_toggle_btn.toggle(mpos)
                 show_grid = grid_toggle_btn.is_on
+                select_toggle_btn.toggle(mpos)
+                select_mode = select_toggle_btn.is_on
                 if tool_bar.selected_tool == "Cursor":
                     cursor = pygame.transform.smoothscale(pygame.image.load(CURSORS["pointer"]), cursor_size) # change apperance for the tool
                     canvas.drawing_color = color_pallete.selected_color # use color from pallete
@@ -199,7 +203,7 @@ def program():
                 canvas.paint_pixel(mpos)
     
 
-        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title)
+        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title, select_mode)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()
 
