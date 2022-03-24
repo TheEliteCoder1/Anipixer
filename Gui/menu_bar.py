@@ -14,13 +14,14 @@ class MenuBar:
         self.hovering_menu_title = None
         self.hovering_option = None
         self.options = None
+        self.selected_option = None
         self.bar_height = bar_height
         self.hover_color = hover_color
-        self.max_option_text_rect = 72
+        self.max_option_text_rect = 87
         self.menu_hover_color = menu_hover_color
         self.menu_space_factor = 10
 
-    def draw(self, mpos, bar_color=COLORS['azure4'], text_style=TextStyle("UI/Fonts/fira.ttf", 20, (0,0,0), None)):
+    def draw(self, mpos, bar_color=COLORS['azure4'], text_style=TextStyle("UI/Fonts/fira.ttf", 20, (0,0,0), None), hide_options=False):
         # drawing the body of the menu bar.
         self.bar_rect = pygame.Rect(self.x, self.y, self.bar_width, self.bar_height)
         pygame.draw.rect(self.screen, bar_color, self.bar_rect)
@@ -59,39 +60,40 @@ class MenuBar:
         for i in range(len(self.menu_titles)):
             self.menu_titles[i]["title"].draw(self.menu_titles[i]["pos"])
 
-        # draw the options of the menu that was clicked.
-        if self.options != None and self.is_hovering(mpos) == True:
-            self.options_list = [] # list with all gui elements of options.
-            options = self.menu_options_dict[self.menu_titles[self.options["index"]]["title"].text]
-            for i in range(len(options)):
-                if i == 0:
-                    option_x = self.menu_titles[self.options["index"]]["rect"].x
-                    option_y = self.menu_titles[self.options["index"]]["rect"].y+self.bar_height
-                    option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color, text_style.bold, text_style.italic, text_style.underline)
-                    option_text_rect = pygame.Rect(option_x, option_y, self.max_option_text_rect, self.menu_titles[self.options["index"]]["rect"].height)
-                    first_x_y = (option_x, option_y)
-                elif i > 0:
-                    option_x = first_x_y[0]
-                    option_y = first_x_y[1]*(i+1)
-                    option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color, text_style.bold, text_style.italic, text_style.underline)
-                    option_text_rect = pygame.Rect(option_x, option_y, self.max_option_text_rect, self.menu_titles[self.options["index"]]["rect"].height)
-                elif i == len(options):
-                    option_x = first_x_y[0]
-                    option_y = first_x_y[1]*(i)
-                    option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color, text_style.bold, text_style.italic, text_style.underline)
-                    option_text_rect = pygame.Rect(option_x, option_y, self.max_option_text_rect, self.menu_titles[self.options["index"]]["rect"].height)
-                self.options_list.append({"pos":(option_x, option_y), "text":option_text, "rect":option_text_rect})
+        if hide_options == False:
+            # draw the options of the menu that was clicked.
+            if self.options != None and self.is_hovering(mpos) == True:
+                self.options_list = [] # list with all gui elements of options.
+                options = self.menu_options_dict[self.menu_titles[self.options["index"]]["title"].text]
+                for i in range(len(options)):
+                    if i == 0:
+                        option_x = self.menu_titles[self.options["index"]]["rect"].x
+                        option_y = self.menu_titles[self.options["index"]]["rect"].y+self.bar_height
+                        option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color, text_style.bold, text_style.italic, text_style.underline)
+                        option_text_rect = pygame.Rect(option_x, option_y, self.max_option_text_rect, self.menu_titles[self.options["index"]]["rect"].height)
+                        first_x_y = (option_x, option_y)
+                    elif i > 0:
+                        option_x = first_x_y[0]
+                        option_y = first_x_y[1]*(i+1)
+                        option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color, text_style.bold, text_style.italic, text_style.underline)
+                        option_text_rect = pygame.Rect(option_x, option_y, self.max_option_text_rect, self.menu_titles[self.options["index"]]["rect"].height)
+                    elif i == len(options):
+                        option_x = first_x_y[0]
+                        option_y = first_x_y[1]*(i)
+                        option_text = TextNode(self.screen, text_style.font_file, options[i], text_style.font_size, text_style.color, text_style.background_color, text_style.bold, text_style.italic, text_style.underline)
+                        option_text_rect = pygame.Rect(option_x, option_y, self.max_option_text_rect, self.menu_titles[self.options["index"]]["rect"].height)
+                    self.options_list.append({"pos":(option_x, option_y), "text":option_text, "rect":option_text_rect})
 
 
-        if hasattr(self, "options_list"):
-            for i in range(len(self.options_list)):
-                if self.hovering_option != None and self.options_list[i]["text"].text == self.hovering_option:
-                    self.options_list[i]["text"].color = self.hover_color
-                    pygame.draw.rect(self.screen, self.menu_hover_color, self.options_list[i]["rect"])
-                else:
-                    pygame.draw.rect(self.screen, bar_color, self.options_list[i]["rect"])
-                pygame.draw.rect(self.screen, (0,0,0), self.options_list[i]["rect"], 1)
-                self.options_list[i]["text"].draw(self.options_list[i]["rect"].center)
+            if hasattr(self, "options_list"):
+                for i in range(len(self.options_list)):
+                    if self.hovering_option != None and self.options_list[i]["text"].text == self.hovering_option:
+                        self.options_list[i]["text"].color = self.hover_color
+                        pygame.draw.rect(self.screen, self.menu_hover_color, self.options_list[i]["rect"])
+                    else:
+                        pygame.draw.rect(self.screen, bar_color, self.options_list[i]["rect"])
+                    pygame.draw.rect(self.screen, (0,0,0), self.options_list[i]["rect"], 1)
+                    self.options_list[i]["text"].draw(self.options_list[i]["rect"].center)
 
 
     def onhover(self, mpos):
@@ -109,7 +111,7 @@ class MenuBar:
             if self.bar_rect.collidepoint(mpos):
                 return True
             else:
-                return False 
+                return False
 
     def open_menu(self, mpos):
         """If any of the menus in the menu bar were clicked, we will display the options below."""
@@ -117,5 +119,13 @@ class MenuBar:
             for i in range(len(self.menu_titles)):
                 if self.menu_titles[i]["rect"].collidepoint(mpos):
                     self.options = {"options":self.menu_titles[i]["options"], "index":i}
+
+    def get_selected_option(self, mpos):
+        """If any of the options of any of the menus in the menu bar were clicked, we will return the selected option."""
+        if hasattr(self, "options_list"):
+            for i in range(len(self.options_list)):
+                if self.options_list[i]["rect"].collidepoint(mpos):
+                    self.selected_option = self.options_list[i]["text"].text
+                
 
 

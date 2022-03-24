@@ -7,22 +7,32 @@ from Gui.color_pallete import ColorPallete
 from Gui.canvas import Canvas
 from Gui.menu_bar import MenuBar
 from Utils.utils import *
+from tkinter import Tk
+import ntpath
+import tkinter.filedialog
+from tkinter.messagebox import showinfo
+from tkinter.filedialog import askopenfilename, asksaveasfilename
 import paintlib
 from paintlib import basic_colors_list
 from Utils.filemenu import save_canvas_to_anp, open_canvas_from_anp
 from paintlib import WHITE, BLACK, CURSORS, FONTS, colors_dict
 
+def path_leaf(path):
+    """Gets filename only from full path."""
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
 
 """Drawing Interface to Screen."""
-def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos):
+def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title):
     screen.fill(app_background_color) # setting the background color
+    pygame.display.set_caption(screen_title)
     for button in buttons: # drawing all buttons
         button.draw(screen)
     # Drawing color pallete
     color_pallete.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15, swatch_outline=WHITE)
     canvas.draw(canvas.grid, canvas.canvas_boundary, show_grid)
     tool_bar.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15)
-    menu_bar.draw(mpos=mpos, bar_color=colors_dict['r']['royalblue1'], text_style=TextStyle("UI/Fonts/fira.ttf", 20, WHITE, None))
+    menu_bar.draw(mpos=mpos, bar_color=colors_dict['r']['royalblue1'], text_style=TextStyle("UI/Fonts/fira.ttf", 20, WHITE, None), hide_options=hide_options)
 
 
 """Running Application."""
@@ -55,27 +65,28 @@ def program():
     tool_images = [CURSORS["pointer"], CURSORS["eraser"]] # Note: Order must correspond with name order.
     tool_bar = ToolBar(screen, 20, 120, tool_names, tool_images, icon_size=cursor_size)
     tool_bar.selected_tool = "Cursor"
+    working_file = None
     tool_bar_width = tool_bar.base_width*tool_bar.draw_scale*tool_bar.width_factor
     # note: grid argument can also be empty list
     max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
     canvas = Canvas(screen, *(tool_bar_width*3, screen_parts["canvas_pos"][1]+20), *max_canvas_presets, grid=[])
     canvas.drawing_color = color_pallete.selected_color
+    clicked = False
     # scenario: test project loading:
     # open_canvas_from_anp('testFiles/test.anp')
     menu_names_list = ["File", "Export"]
     menu_options_dict = {
-        "File":["Open", "Save"],
+        "File":["Open", "Save", "Save As"],
         "Export":["PNG"]
     }
     menu_bar = MenuBar(screen, menu_names_list, menu_options_dict=menu_options_dict, bar_height=25, hover_color=(0,0,0), menu_hover_color=WHITE)
+    hide_options = False
     buttons = [clear_btn, grid_toggle_btn]
     mpos = pygame.mouse.get_pos()
     while running:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # saving grid
-                save_canvas_to_anp(canvas, 'testFiles/test2.anp')
                 running = False
                 pygame.quit()
                 quit()
@@ -92,6 +103,38 @@ def program():
                 color_pallete.get_selected_color(mpos)
                 # handles menu bar
                 menu_bar.open_menu(mpos)
+                if menu_bar.is_hovering(mpos):
+                    hide_options = False
+                else:
+                    hide_options = True
+                menu_bar.get_selected_option(mpos)
+                """Handling Selected Options from MenuBar"""
+                if menu_bar.selected_option == "Open":
+                    window = Tk()
+                    window.withdraw()
+                    window.attributes("-topmost", True)
+                    myFormats = [('Anipixer Working File','*.anp')]
+                    filename = askopenfilename(title="Open File", filetypes=myFormats)
+                    window.destroy()
+                    menu_bar.selected_option = None
+                    screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
+                    canvas.change_data(grid=open_canvas_from_anp(filename))
+                    working_file = filename # get the full path
+                if menu_bar.selected_option == "Save":
+                    window = Tk()
+                    window.withdraw()
+                    window.attributes("-topmost", True)
+                    if working_file != None:
+                        save_canvas_to_anp(canvas, working_file)
+                        tkinter.messagebox.showinfo(title="Saved.", message="Your work was saved successfully.")
+                        menu_bar.selected_option = None
+                    else:
+                        tkinter.messagebox.showerror(title="Error.", message="No file has been opened yet.")
+                        menu_bar.selected_option = None
+                    window.destroy()
+                if menu_bar.selected_option == "Save As":
+                    pass
+
                 # check for toggle buttons
                 grid_toggle_btn.toggle(mpos)
                 show_grid = grid_toggle_btn.is_on
@@ -104,10 +147,45 @@ def program():
                 """These Buttons Below Can Be Clicked With Any Tool"""
                 if clear_btn.clicked(mpos):
                     canvas.clear_canvas()
+                
 
             elif event.type == pygame.MOUSEMOTION: # checks if the mouse is moving
                 mpos = pygame.mouse.get_pos()
                 menu_bar.onhover(mpos)
+
+            elif event.type == pygame.KEYDOWN:
+                # Check for key bindings
+                # E.g, Ctrl + S = Save
+                if event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    window = Tk()
+                    window.withdraw()
+                    window.attributes("-topmost", True)
+                    if working_file != None:
+                        save_canvas_to_anp(canvas, working_file)
+                        tkinter.messagebox.showinfo(title="Saved.", message="Your work was saved successfully.")
+                        menu_bar.selected_option = None
+                    else:
+                        tkinter.messagebox.showerror(title="Error.", message="No file has been opened yet.")
+                        menu_bar.selected_option = None
+                    window.destroy()
+                # E.g, Ctrl + O = Open
+                elif event.key == pygame.K_o and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    window = Tk()
+                    window.withdraw()
+                    window.attributes("-topmost", True)
+                    myFormats = [('Anipixer Working File','*.anp')]
+                    filename = askopenfilename(title="Open File", filetypes=myFormats)
+                    window.destroy()
+                    menu_bar.selected_option = None
+                    screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
+                    canvas.change_data(grid=open_canvas_from_anp(filename))
+                    working_file = filename # get the full path
+                elif event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    canvas.undo()
+                elif event.key == pygame.K_r and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    canvas.reset()
+
+
 
             elif event.type == VIDEORESIZE: # window resize handler
                 screen = pygame.display.set_mode(event.size, HWSURFACE|DOUBLEBUF|RESIZABLE)
@@ -121,7 +199,7 @@ def program():
                 canvas.paint_pixel(mpos)
     
 
-        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos)
+        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()
 
