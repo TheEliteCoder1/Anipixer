@@ -4,13 +4,13 @@ from Utils.utils import get_text_rect
 from Utils.colors import COLORS
 
 class MenuBar:
-    def __init__(self, screen: pygame.Surface, menu_names_list: list, menu_options_dict: dict, bar_height: int, hover_color=(0,0,0), menu_hover_color=(255,255,255)):
+    def __init__(self, screen: pygame.Surface, menu_options_dict: dict, bar_height: int, hover_color=(0,0,0), menu_hover_color=(255,255,255)):
         self.screen = screen
         self.x = 0
         self.y = 0
         self.bar_width = screen.get_width()
-        self.menu_names_list = menu_names_list
         self.menu_options_dict = menu_options_dict
+        self.menu_names_list = [key for key in menu_options_dict.keys()]
         self.hovering_menu_title = None
         self.hovering_option = None
         self.options = None
@@ -112,6 +112,14 @@ class MenuBar:
                 return True
             else:
                 return False
+
+    def option_hover(self, mpos):
+        if hasattr(self, "options_list"):
+            for i in range(len(self.options_list)):
+                if self.options_list[i]["rect"].collidepoint(mpos):
+                    return True
+                else:
+                    return False
 
     def open_menu(self, mpos):
         """If any of the menus in the menu bar were clicked, we will display the options below."""

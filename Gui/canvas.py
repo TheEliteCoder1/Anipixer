@@ -47,7 +47,7 @@ class Canvas:
         # Draw Canvas Boundary
         pygame.draw.rect(self.screen, COLORS["black"], canvas_boundary, width=1)
 
-        # Draw selected pixel
+        # Draw selected pixels
         if select_mode == True:
             pass
 
@@ -56,8 +56,8 @@ class Canvas:
         and if so apply the selected drawing color to the pixel."""
         for i in range(len(self.grid)):
             if self.grid[i]["pixel"].collidepoint(mpos):
-                self.grid[i]["color"],  
                 self.grid[i]["color"] = self.drawing_color
+                
     def clear_canvas(self):
         """Resets the pixel colors on the canvas."""
         for i in range(len(self.grid)):

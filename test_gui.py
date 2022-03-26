@@ -41,7 +41,7 @@ def draw_tool_bar(screen):
 def draw_canvas(screen):
     """Canvas draw method."""
     screen.fill(paintlib.WHITE)
-    cv.draw(cv.grid, cv.canvas_boundary)
+    cv.draw(cv.grid, cv.canvas_boundary, show_grid=False, select_mode=False)
 
 def draw_select_box(screen, bg_color):
     """SelectBox draw method."""

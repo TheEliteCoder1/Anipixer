@@ -76,12 +76,12 @@ def program():
     select_mode = select_toggle_btn.is_on
     # scenario: test project loading:
     # open_canvas_from_anp('testFiles/test.anp')
-    menu_names_list = ["File", "Export"]
     menu_options_dict = {
-        "File":["Open", "Save", "Save As"],
+        "File":["Open", "Save", "Save As", "New"],
         "Export":["PNG"]
     }
-    menu_bar = MenuBar(screen, menu_names_list, menu_options_dict=menu_options_dict, bar_height=25, hover_color=(0,0,0), menu_hover_color=WHITE)
+    open_formats = [('Anipixer Working File','*.anp')]
+    menu_bar = MenuBar(screen, menu_options_dict=menu_options_dict, bar_height=25, hover_color=(0,0,0), menu_hover_color=WHITE)
     hide_options = False
     buttons = [clear_btn, grid_toggle_btn, select_toggle_btn]
     mpos = pygame.mouse.get_pos()
@@ -105,24 +105,30 @@ def program():
                 color_pallete.get_selected_color(mpos)
                 # handles menu bar
                 menu_bar.open_menu(mpos)
+                
                 if menu_bar.is_hovering(mpos):
                     hide_options = False
                 else:
                     hide_options = True
-                menu_bar.get_selected_option(mpos)
+                    
+                if menu_bar.option_hover(mpos) == True:
+                    menu_bar.get_selected_option(mpos)
+                    
                 """Handling Selected Options from MenuBar"""
                 if menu_bar.selected_option == "Open":
                     window = Tk()
                     window.withdraw()
                     window.attributes("-topmost", True)
-                    myFormats = [('Anipixer Working File','*.anp')]
-                    filename = askopenfilename(title="Open File", filetypes=myFormats)
+                    filename = askopenfilename(title="Open File", filetypes=open_formats)
                     window.destroy()
+                    try:
+                        screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
+                        canvas.change_data(grid=open_canvas_from_anp(filename))
+                        working_file = filename # get the full path
+                    except:
+                        pass # do not raise error.
                     menu_bar.selected_option = None
-                    screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
-                    canvas.change_data(grid=open_canvas_from_anp(filename))
-                    working_file = filename # get the full path
-                if menu_bar.selected_option == "Save":
+                elif menu_bar.selected_option == "Save":
                     window = Tk()
                     window.withdraw()
                     window.attributes("-topmost", True)
@@ -134,8 +140,20 @@ def program():
                         tkinter.messagebox.showerror(title="Error.", message="No file has been opened yet.")
                         menu_bar.selected_option = None
                     window.destroy()
-                if menu_bar.selected_option == "Save As":
-                    pass
+                elif menu_bar.selected_option == "Save As":
+                    window = Tk()
+                    window.withdraw()
+                    window.attributes("-topmost", True)
+                    filename = asksaveasfilename(title="Save As File", filetypes=open_formats)
+                    window.destroy()
+                    try:
+                        screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
+                        save_canvas_to_anp(canvas, filename)
+                        canvas.change_data(grid=open_canvas_from_anp(filename))
+                        working_file = filename # get the full path
+                    except:
+                        pass # do not raise error.
+                    menu_bar.selected_option = None
 
                 # check for toggle buttons
                 grid_toggle_btn.toggle(mpos)
@@ -156,6 +174,7 @@ def program():
             elif event.type == pygame.MOUSEMOTION: # checks if the mouse is moving
                 mpos = pygame.mouse.get_pos()
                 menu_bar.onhover(mpos)
+                menu_bar.option_hover(mpos)
 
             elif event.type == pygame.KEYDOWN:
                 # Check for key bindings
@@ -177,8 +196,7 @@ def program():
                     window = Tk()
                     window.withdraw()
                     window.attributes("-topmost", True)
-                    myFormats = [('Anipixer Working File','*.anp')]
-                    filename = askopenfilename(title="Open File", filetypes=myFormats)
+                    filename = askopenfilename(title="Open File", filetypes=open_formats)
                     window.destroy()
                     menu_bar.selected_option = None
                     screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
