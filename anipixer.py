@@ -110,8 +110,8 @@ def program():
                     hide_options = False
                 else:
                     hide_options = True
-                    
-                if menu_bar.option_hover(mpos) == True:
+
+                if menu_bar.is_hovering(mpos):
                     menu_bar.get_selected_option(mpos)
                     
                 """Handling Selected Options from MenuBar"""
@@ -127,7 +127,7 @@ def program():
                         working_file = filename # get the full path
                     except:
                         pass # do not raise error.
-                    menu_bar.selected_option = None
+                        
                 elif menu_bar.selected_option == "Save":
                     window = Tk()
                     window.withdraw()
@@ -135,26 +135,26 @@ def program():
                     if working_file != None:
                         save_canvas_to_anp(canvas, working_file)
                         tkinter.messagebox.showinfo(title="Saved.", message="Your work was saved successfully.")
-                        menu_bar.selected_option = None
+                        
                     else:
                         tkinter.messagebox.showerror(title="Error.", message="No file has been opened yet.")
-                        menu_bar.selected_option = None
+                        
                     window.destroy()
                 elif menu_bar.selected_option == "Save As":
+                    print(menu_bar.selected_option)
                     window = Tk()
                     window.withdraw()
                     window.attributes("-topmost", True)
                     filename = asksaveasfilename(title="Save As File", filetypes=open_formats)
                     window.destroy()
                     try:
-                        screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
                         save_canvas_to_anp(canvas, filename)
+                        screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
                         canvas.change_data(grid=open_canvas_from_anp(filename))
                         working_file = filename # get the full path
                     except:
                         pass # do not raise error.
-                    menu_bar.selected_option = None
-
+                    
                 # check for toggle buttons
                 grid_toggle_btn.toggle(mpos)
                 show_grid = grid_toggle_btn.is_on
@@ -186,10 +186,10 @@ def program():
                     if working_file != None:
                         save_canvas_to_anp(canvas, working_file)
                         tkinter.messagebox.showinfo(title="Saved.", message="Your work was saved successfully.")
-                        menu_bar.selected_option = None
+                        
                     else:
                         tkinter.messagebox.showerror(title="Error.", message="No file has been opened yet.")
-                        menu_bar.selected_option = None
+                        
                     window.destroy()
                 # E.g, Ctrl + O = Open
                 elif event.key == pygame.K_o and pygame.key.get_mods() & pygame.KMOD_CTRL:
@@ -198,14 +198,12 @@ def program():
                     window.attributes("-topmost", True)
                     filename = askopenfilename(title="Open File", filetypes=open_formats)
                     window.destroy()
-                    menu_bar.selected_option = None
+                    
                     screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
                     canvas.change_data(grid=open_canvas_from_anp(filename))
                     working_file = filename # get the full path
-                elif event.key == pygame.K_z and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                    canvas.undo()
-                elif event.key == pygame.K_r and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                    canvas.reset()
+                elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                    pass
 
 
 
@@ -220,7 +218,7 @@ def program():
             if tool_bar.selected_tool == "Cursor" or tool_bar.selected_tool == "Eraser":
                 canvas.paint_pixel(mpos)
     
-
+        print(menu_bar.selected_option)
         draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title, select_mode)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()

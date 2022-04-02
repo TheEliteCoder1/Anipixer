@@ -12,6 +12,7 @@ class MenuBar:
         self.menu_options_dict = menu_options_dict
         self.menu_names_list = [key for key in menu_options_dict.keys()]
         self.hovering_menu_title = None
+        self.was_clicked = False
         self.hovering_option = None
         self.options = None
         self.selected_option = None
@@ -117,9 +118,7 @@ class MenuBar:
         if hasattr(self, "options_list"):
             for i in range(len(self.options_list)):
                 if self.options_list[i]["rect"].collidepoint(mpos):
-                    return True
-                else:
-                    return False
+                    self.selected_option = self.options_list[i]["text"].text
 
     def open_menu(self, mpos):
         """If any of the menus in the menu bar were clicked, we will display the options below."""
@@ -134,6 +133,5 @@ class MenuBar:
             for i in range(len(self.options_list)):
                 if self.options_list[i]["rect"].collidepoint(mpos):
                     self.selected_option = self.options_list[i]["text"].text
-                
 
 
