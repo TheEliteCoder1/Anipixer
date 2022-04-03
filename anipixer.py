@@ -1,4 +1,4 @@
-from re import T
+from pygame_menu import Menu
 from Gui.button import Button
 from Gui.toggle_button import ToggleButton
 from Gui.label import TextNode, TextStyle
@@ -7,6 +7,7 @@ from Gui.tool_bar import ToolBar
 from Gui.color_pallete import ColorPallete
 from Gui.canvas import Canvas
 from Utils.utils import *
+from Utils.exporter import new_image
 from tkinter import Tk
 import ntpath
 import tkinter.filedialog
@@ -37,7 +38,7 @@ def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_
 """Running Application."""
 def program():
     """Runtime Variables"""
-    sw, sh = 700, 640
+    sw, sh = 820, 640
     screen = pygame.display.set_mode((sw, sh), HWSURFACE|DOUBLEBUF|RESIZABLE)
     screen_title = "Anipixer"
     pygame.display.set_caption(screen_title)
@@ -54,10 +55,13 @@ def program():
     """Setting Up User Interface."""
     color_pallete = ColorPallete(screen, 20, 30, color_values=basic_colors_list, color_button_size=(30, 30))
     color_pallete_width = len(color_pallete.color_values)*color_pallete.draw_scale*color_pallete.width_factor
-    clear_btn_x, clear_btn_y = color_pallete_width+35,  color_pallete.y/2+5
+    custom_btn_x, custom_btn_y = color_pallete_width+34, color_pallete.y/2+5
+    custom_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Custom", 25, WHITE)
+    custom_btn = Button(custom_btn_x, custom_btn_y, 120, 55, color=(106, 209, 4), text=custom_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
+    clear_btn_x, clear_btn_y = color_pallete_width+166,  color_pallete.y/2+5
     clear_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Clear", 25, WHITE)
     clear_btn = Button(clear_btn_x, clear_btn_y, 100, 55, color=colors_dict['r']["red3"], text=clear_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
-    grid_toggle_btn = ToggleButton(screen, color_pallete_width+clear_btn.width+45, clear_btn_y, clear_btn.width+20, clear_btn.height, (106, 209, 4), colors_dict['r']["red3"], 7, 15, border_color=colors_dict['b']['black'], help_text='Grid:')
+    grid_toggle_btn = ToggleButton(screen, clear_btn_x+clear_btn.width+11, clear_btn_y, clear_btn.width+20, clear_btn.height, (106, 209, 4), colors_dict['r']["red3"], 7, 15, border_color=colors_dict['b']['black'], help_text='Grid:')
     grid_toggle_btn.text.font_size = 23
     show_grid = grid_toggle_btn.is_on
     tool_names = ["Cursor", "Eraser"]
@@ -81,7 +85,8 @@ def program():
     unselect_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Deselect", 25, WHITE)
     unselect_btn = Button(x=paste_btn.x, y=paste_btn.y+paste_btn.height+15, width=select_toggle_btn.width+5, height=paste_btn.height, color=colors_dict["d"]["darkviolet"], text=unselect_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
     open_formats = [('Anipixer Working File','*.anp')]
-    buttons = [clear_btn, grid_toggle_btn, select_toggle_btn, copy_btn, paste_btn, unselect_btn]
+    export_formats = [('PNG', '*.png')]
+    buttons = [custom_btn, clear_btn, grid_toggle_btn, select_toggle_btn, copy_btn, paste_btn, unselect_btn]
     unselect_mode = False
     mpos = pygame.mouse.get_pos()
     while running:
@@ -177,7 +182,15 @@ def program():
                 elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
                     if canvas.copied == True:
                         canvas.paste_from_clipboard()
-
+                
+                elif event.key == pygame.K_e and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    window = Tk()
+                    window.withdraw()
+                    window.attributes("-topmost", True)
+                    filename = asksaveasfilename(title="Export as PNG", filetypes=export_formats)
+                    window.destroy()
+                    new_image(canvas.width, canvas.height, canvas.grid)
+                    #canvas.pixel_size, [pixel["color"] for pixel in canvas.grid], filename
                 # Moving Copied Pixels
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_w] and canvas.copied == True:
