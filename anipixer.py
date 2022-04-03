@@ -1,3 +1,4 @@
+from re import T
 from Gui.button import Button
 from Gui.toggle_button import ToggleButton
 from Gui.label import TextNode, TextStyle
@@ -5,7 +6,6 @@ from Gui.icon import Icon
 from Gui.tool_bar import ToolBar
 from Gui.color_pallete import ColorPallete
 from Gui.canvas import Canvas
-from Gui.menu_bar import MenuBar
 from Utils.utils import *
 from tkinter import Tk
 import ntpath
@@ -23,7 +23,7 @@ def path_leaf(path):
     return tail or ntpath.basename(head)
 
 """Drawing Interface to Screen."""
-def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title, select_mode):
+def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, mpos, screen_title, select_mode):
     screen.fill(app_background_color) # setting the background color
     pygame.display.set_caption(screen_title)
     for button in buttons: # drawing all buttons
@@ -32,7 +32,6 @@ def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_
     color_pallete.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15, swatch_outline=WHITE)
     canvas.draw(canvas.grid, canvas.canvas_boundary, show_grid, select_mode)
     tool_bar.draw(outline=True, color=colors_dict['r']['royalblue1'], border_color=colors_dict['b']['black'], border_width=7, border_radius=15)
-    menu_bar.draw(mpos=mpos, bar_color=colors_dict['r']['royalblue1'], text_style=TextStyle("UI/Fonts/fira.ttf", 20, WHITE, None), hide_options=hide_options)
 
 
 """Running Application."""
@@ -53,9 +52,9 @@ def program():
     is_mouse_dragging = False
     pygame.mouse.set_visible(False)
     """Setting Up User Interface."""
-    color_pallete = ColorPallete(screen, 20, 50, color_values=basic_colors_list, color_button_size=(30, 30))
+    color_pallete = ColorPallete(screen, 20, 30, color_values=basic_colors_list, color_button_size=(30, 30))
     color_pallete_width = len(color_pallete.color_values)*color_pallete.draw_scale*color_pallete.width_factor
-    clear_btn_x, clear_btn_y = color_pallete_width+35,  color_pallete.y/2+15
+    clear_btn_x, clear_btn_y = color_pallete_width+35,  color_pallete.y/2+5
     clear_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Clear", 25, WHITE)
     clear_btn = Button(clear_btn_x, clear_btn_y, 100, 55, color=colors_dict['r']["red3"], text=clear_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
     grid_toggle_btn = ToggleButton(screen, color_pallete_width+clear_btn.width+45, clear_btn_y, clear_btn.width+20, clear_btn.height, (106, 209, 4), colors_dict['r']["red3"], 7, 15, border_color=colors_dict['b']['black'], help_text='Grid:')
@@ -72,18 +71,18 @@ def program():
     max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
     canvas = Canvas(screen, *(tool_bar_width*4, screen_parts["canvas_pos"][1]+20), *max_canvas_presets, grid=[])
     canvas.drawing_color = color_pallete.selected_color
-    select_toggle_btn = ToggleButton(screen, x=tool_bar.x, y=tool_bar_height*3, width=clear_btn.width+20, height=clear_btn.height, on_color=(106, 209, 4), off_color=colors_dict['r']["red3"], border_width=7, border_radius=15, border_color=colors_dict['b']['black'], help_text='Select:' )
+    select_toggle_btn = ToggleButton(screen, x=tool_bar.x, y=tool_bar_height*2.3, width=clear_btn.width+20, height=clear_btn.height, on_color=(106, 209, 4), off_color=colors_dict['r']["red3"], border_width=7, border_radius=15, border_color=colors_dict['b']['black'], help_text='Select:' )
+    select_toggle_btn.text.font_size = 20
     select_mode = select_toggle_btn.is_on
-    # scenario: test project loading:
-    # open_canvas_from_anp('testFiles/test.anp')
-    menu_options_dict = {
-        "File":["Open", "Save", "Save As", "New"],
-        "Export":["PNG"]
-    }
+    copy_btn_txt =  TextNode(screen, FONTS["ui_thick_font"], "Copy", 25, WHITE)
+    copy_btn = Button(x=tool_bar.x, y=select_toggle_btn.y+clear_btn.height+15, width=clear_btn.width, height=clear_btn.height, color=colors_dict['d']['darkturquoise'], text=copy_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
+    paste_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Paste", 25, WHITE)
+    paste_btn = Button(x=copy_btn.x, y=copy_btn.y+copy_btn.height+15, width=copy_btn.width, height=copy_btn.height, color=(106, 209, 4), text=paste_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
+    unselect_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Deselect", 25, WHITE)
+    unselect_btn = Button(x=paste_btn.x, y=paste_btn.y+paste_btn.height+15, width=select_toggle_btn.width+5, height=paste_btn.height, color=colors_dict["d"]["darkviolet"], text=unselect_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
     open_formats = [('Anipixer Working File','*.anp')]
-    menu_bar = MenuBar(screen, menu_options_dict=menu_options_dict, bar_height=25, hover_color=(0,0,0), menu_hover_color=WHITE)
-    hide_options = False
-    buttons = [clear_btn, grid_toggle_btn, select_toggle_btn]
+    buttons = [clear_btn, grid_toggle_btn, select_toggle_btn, copy_btn, paste_btn, unselect_btn]
+    unselect_mode = False
     mpos = pygame.mouse.get_pos()
     while running:
 
@@ -103,63 +102,13 @@ def program():
                 tool_bar.get_selected_tool(mpos)
                 # always check for color pallete clicks
                 color_pallete.get_selected_color(mpos)
-                # handles menu bar
-                menu_bar.open_menu(mpos)
-                
-                if menu_bar.is_hovering(mpos):
-                    hide_options = False
-                else:
-                    hide_options = True
-
-                if menu_bar.is_hovering(mpos):
-                    menu_bar.get_selected_option(mpos)
-                    
-                """Handling Selected Options from MenuBar"""
-                if menu_bar.selected_option == "Open":
-                    window = Tk()
-                    window.withdraw()
-                    window.attributes("-topmost", True)
-                    filename = askopenfilename(title="Open File", filetypes=open_formats)
-                    window.destroy()
-                    try:
-                        screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
-                        canvas.change_data(grid=open_canvas_from_anp(filename))
-                        working_file = filename # get the full path
-                    except:
-                        pass # do not raise error.
-                        
-                elif menu_bar.selected_option == "Save":
-                    window = Tk()
-                    window.withdraw()
-                    window.attributes("-topmost", True)
-                    if working_file != None:
-                        save_canvas_to_anp(canvas, working_file)
-                        tkinter.messagebox.showinfo(title="Saved.", message="Your work was saved successfully.")
-                        
-                    else:
-                        tkinter.messagebox.showerror(title="Error.", message="No file has been opened yet.")
-                        
-                    window.destroy()
-                elif menu_bar.selected_option == "Save As":
-                    print(menu_bar.selected_option)
-                    window = Tk()
-                    window.withdraw()
-                    window.attributes("-topmost", True)
-                    filename = asksaveasfilename(title="Save As File", filetypes=open_formats)
-                    window.destroy()
-                    try:
-                        save_canvas_to_anp(canvas, filename)
-                        screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
-                        canvas.change_data(grid=open_canvas_from_anp(filename))
-                        working_file = filename # get the full path
-                    except:
-                        pass # do not raise error.
                     
                 # check for toggle buttons
                 grid_toggle_btn.toggle(mpos)
                 show_grid = grid_toggle_btn.is_on
                 select_toggle_btn.toggle(mpos)
                 select_mode = select_toggle_btn.is_on
+
                 if tool_bar.selected_tool == "Cursor":
                     cursor = pygame.transform.smoothscale(pygame.image.load(CURSORS["pointer"]), cursor_size) # change apperance for the tool
                     canvas.drawing_color = color_pallete.selected_color # use color from pallete
@@ -169,12 +118,14 @@ def program():
                 """These Buttons Below Can Be Clicked With Any Tool"""
                 if clear_btn.clicked(mpos):
                     canvas.clear_canvas()
-                
-
-            elif event.type == pygame.MOUSEMOTION: # checks if the mouse is moving
-                mpos = pygame.mouse.get_pos()
-                menu_bar.onhover(mpos)
-                menu_bar.option_hover(mpos)
+                if copy_btn.clicked(mpos):
+                    if select_mode == True:
+                        canvas.copy_from_clipboard()
+                if paste_btn.clicked(mpos):
+                    if canvas.copied == True:
+                        canvas.paste_from_clipboard()
+                if unselect_btn.clicked(mpos):
+                    canvas.unselect_from_clipboard()
 
             elif event.type == pygame.KEYDOWN:
                 # Check for key bindings
@@ -197,29 +148,62 @@ def program():
                     window.withdraw()
                     window.attributes("-topmost", True)
                     filename = askopenfilename(title="Open File", filetypes=open_formats)
+                    try:
+                        screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
+                        canvas.change_data(grid=open_canvas_from_anp(filename))
+                        working_file = filename # get the full path
+                    except:
+                         tkinter.messagebox.showerror(title="Error", message="An error occured when trying to open the file.")
                     window.destroy()
-                    
-                    screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
-                    canvas.change_data(grid=open_canvas_from_anp(filename))
-                    working_file = filename # get the full path
-                elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
-                    pass
+                # Save As
+                elif event.key == pygame.K_t and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    window = Tk()
+                    window.withdraw()
+                    window.attributes("-topmost", True)
+                    filename = asksaveasfilename(title="Save As File", filetypes=open_formats)
+                    window.destroy()
+                    try:
+                        save_canvas_to_anp(canvas, filename)
+                        screen_title = f"Anpixer - {path_leaf(filename)}" # display filename not full path.
+                        canvas.change_data(grid=open_canvas_from_anp(filename))
+                        working_file = filename # get the full path
+                    except:
+                        pass # do not raise error.
+                # Copying Pixels to Anipixer's Clipboard
+                elif event.key == pygame.K_c and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    if select_mode == True:
+                        canvas.copy_from_clipboard()
+                # Pasting from Anipixer's Clipboard
+                elif event.key == pygame.K_v and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                    if canvas.copied == True:
+                        canvas.paste_from_clipboard()
 
+                # Moving Copied Pixels
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_w] and canvas.copied == True:
+                    canvas.move_copied_pixels(direction='up')
+                elif keys[pygame.K_s] and canvas.copied == True:
+                    canvas.move_copied_pixels(direction='down')
+                elif keys[pygame.K_d] and canvas.copied == True:
+                    canvas.move_copied_pixels(direction='right')
+                elif keys[pygame.K_a] and canvas.copied == True:
+                    canvas.move_copied_pixels(direction='left')
 
 
             elif event.type == VIDEORESIZE: # window resize handler
                 screen = pygame.display.set_mode(event.size, HWSURFACE|DOUBLEBUF|RESIZABLE)
                 sw, sh = screen.get_width(), screen.get_height()
                 max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
-                menu_bar.bar_width = sw
                 
         if is_mouse_dragging == True: # Mouse draging tools will work here.
             mpos = pygame.mouse.get_pos()
-            if tool_bar.selected_tool == "Cursor" or tool_bar.selected_tool == "Eraser":
-                canvas.paint_pixel(mpos)
-    
-        print(menu_bar.selected_option)
-        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, menu_bar, mpos, hide_options, screen_title, select_mode)
+            if select_mode != True:
+                if tool_bar.selected_tool == "Cursor" or tool_bar.selected_tool == "Eraser":
+                    canvas.paint_pixel(mpos)
+            elif select_mode == True:
+                canvas.select_pixels(mpos)
+
+        draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, mpos, screen_title, select_mode)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()
 
