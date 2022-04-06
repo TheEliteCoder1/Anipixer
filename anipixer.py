@@ -1,4 +1,3 @@
-from pygame_menu import Menu
 from Gui.button import Button
 from Gui.toggle_button import ToggleButton
 from Gui.label import TextNode, TextStyle
@@ -8,6 +7,8 @@ from Gui.color_pallete import ColorPallete
 from Gui.canvas import Canvas
 from Utils.utils import *
 from Utils.exporter import new_image
+import pygame_gui
+import pygame_gui.elements as elements
 from tkinter import Tk
 import ntpath
 import tkinter.filedialog
@@ -38,17 +39,17 @@ def draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_
 """Running Application."""
 def program():
     """Runtime Variables"""
-    sw, sh = 820, 640
+    sw, sh = 840, 640
     screen = pygame.display.set_mode((sw, sh), HWSURFACE|DOUBLEBUF|RESIZABLE)
     screen_title = "Anipixer"
     pygame.display.set_caption(screen_title)
+    manager = pygame_gui.UIManager((sw, sh), 'theme.json')
     screen_parts = get_screen_parts(screen)
-    refresh_rate = 120
     cursor_size = (35, 35)
     cursor = pygame.transform.smoothscale(pygame.image.load(CURSORS["pointer"]), cursor_size)
     cursor_rect = cursor.get_rect()
     app_background_color = WHITE
-    clock = pygame.time.Clock()
+    clock, fps = pygame.time.Clock(), 120
     running = True
     is_mouse_dragging = False
     pygame.mouse.set_visible(False)
@@ -72,8 +73,7 @@ def program():
     tool_bar_width = tool_bar.base_width*tool_bar.draw_scale*tool_bar.width_factor
     tool_bar_height = len(tool_bar.tool_names)*tool_bar.draw_scale*tool_bar.height_factor
     # note: grid argument can also be empty list
-    max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
-    canvas = Canvas(screen, *(tool_bar_width*4, screen_parts["canvas_pos"][1]+20), *max_canvas_presets, grid=[])
+    canvas = Canvas(screen, *(tool_bar_width*4, screen_parts["canvas_pos"][1]+20), 25, 20, 25, grid=[])
     canvas.drawing_color = color_pallete.selected_color
     select_toggle_btn = ToggleButton(screen, x=tool_bar.x, y=tool_bar_height*2.3, width=clear_btn.width+20, height=clear_btn.height, on_color=(106, 209, 4), off_color=colors_dict['r']["red3"], border_width=7, border_radius=15, border_color=colors_dict['b']['black'], help_text='Select:' )
     select_toggle_btn.text.font_size = 20
@@ -85,17 +85,22 @@ def program():
     unselect_btn_txt = TextNode(screen, FONTS["ui_thick_font"], "Deselect", 25, WHITE)
     unselect_btn = Button(x=paste_btn.x, y=paste_btn.y+paste_btn.height+15, width=select_toggle_btn.width+5, height=paste_btn.height, color=colors_dict["d"]["darkviolet"], text=unselect_btn_txt, border_width=7, border_radius=15, border_color=colors_dict['b']['black'])
     open_formats = [('Anipixer Working File','*.anp')]
+    move_mode = 'Click'
+    move_modes = ['Click', 'Drag']
+    move_mode_selector = elements.ui_drop_down_menu.UIDropDownMenu(options_list=move_modes, starting_option=move_mode, relative_rect=pygame.Rect(unselect_btn.x, unselect_btn.y+unselect_btn.height+15, 100, 50), manager=manager)
     export_formats = [('PNG', '*.png')]
     buttons = [custom_btn, clear_btn, grid_toggle_btn, select_toggle_btn, copy_btn, paste_btn, unselect_btn]
-    unselect_mode = False
+    
     mpos = pygame.mouse.get_pos()
     while running:
-
+        time_delta = clock.tick(fps)/1000.0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 pygame.quit()
                 quit()
+
+            manager.process_events(event)
                 
             if event.type == pygame.MOUSEBUTTONUP: # if the mouse is over the screen, not clicking.
                 is_mouse_dragging = False
@@ -131,6 +136,7 @@ def program():
                         canvas.paste_from_clipboard()
                 if unselect_btn.clicked(mpos):
                     canvas.unselect_from_clipboard()
+
 
             elif event.type == pygame.KEYDOWN:
                 # Check for key bindings
@@ -192,21 +198,21 @@ def program():
                     new_image(canvas.width, canvas.height, canvas.grid)
                     #canvas.pixel_size, [pixel["color"] for pixel in canvas.grid], filename
                 # Moving Copied Pixels
-                keys = pygame.key.get_pressed()
-                if keys[pygame.K_w] and canvas.copied == True:
-                    canvas.move_copied_pixels(direction='up')
-                elif keys[pygame.K_s] and canvas.copied == True:
-                    canvas.move_copied_pixels(direction='down')
-                elif keys[pygame.K_d] and canvas.copied == True:
-                    canvas.move_copied_pixels(direction='right')
-                elif keys[pygame.K_a] and canvas.copied == True:
-                    canvas.move_copied_pixels(direction='left')
+                if move_mode == 'Click':
+                    keys = pygame.key.get_pressed()
+                    if keys[pygame.K_w] and canvas.copied == True:
+                        canvas.move_copied_pixels(direction='up')
+                    elif keys[pygame.K_s] and canvas.copied == True:
+                        canvas.move_copied_pixels(direction='down')
+                    elif keys[pygame.K_d] and canvas.copied == True:
+                        canvas.move_copied_pixels(direction='right')
+                    elif keys[pygame.K_a] and canvas.copied == True:
+                        canvas.move_copied_pixels(direction='left')
 
 
             elif event.type == VIDEORESIZE: # window resize handler
                 screen = pygame.display.set_mode(event.size, HWSURFACE|DOUBLEBUF|RESIZABLE)
                 sw, sh = screen.get_width(), screen.get_height()
-                max_canvas_presets = (int((sw - 200)/25), int((sh - 120)/25), 25)
                 
         if is_mouse_dragging == True: # Mouse draging tools will work here.
             mpos = pygame.mouse.get_pos()
@@ -215,8 +221,10 @@ def program():
                     canvas.paint_pixel(mpos)
             elif select_mode == True:
                 canvas.select_pixels(mpos)
-
+        
+        manager.update(time_delta)
         draw_app(screen, app_background_color, buttons, color_pallete, canvas, tool_bar, show_grid, mpos, screen_title, select_mode)
+        manager.draw_ui(screen)
         draw_cursor(screen, cursor, cursor_rect)
         pygame.display.update()
 
